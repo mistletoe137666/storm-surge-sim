@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>风暴潮模拟平台 · 高中地理课堂演示</title>
+<style>
+/* ========================= 基础 ========================= */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg0:#050b12; --bg1:#0a1622; --bg2:#0e1f2e;
+  --panel:rgba(255,255,255,.045);
+  --panel-b:rgba(120,215,255,.14);
+  --txt:#e8f4ff; --txt2:#8fa9bf; --txt3:#5d7a92;
+  --cy:#3ad6ff; --cy2:#6ee7ff; --teal:#43e0b8;
+  --grn:#3ddc84; --yel:#ffd23f; --org:#ff9a3c; --red:#ff4d5e; --dred:#c9122c;
+  --font:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",system-ui,sans-serif;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg0);font-family:var(--font);color:var(--txt);
+  -webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(1200px 700px at 78% 12%,rgba(58,214,255,.10),transparent 60%),
+    radial-gradient(900px 600px at 12% 88%,rgba(67,224,184,.07),transparent 60%),
+    linear-gradient(160deg,#050b12,#091624 55%,#050b12);}
+#app{position:relative;display:flex;flex-direction:column;height:100vh;height:100dvh;
+  width:100vw;max-width:560px;margin:0 auto;gap:9px;padding:9px;z-index:1}
+
+/* ========================= 左侧控制面板 ========================= */
+#panel{
+  flex:1 1 auto;min-height:0;width:auto;display:flex;flex-direction:column;gap:10px;
+  overflow-y:auto;overflow-x:hidden;padding-right:2px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:rgba(120,215,255,.25) transparent;
+}
+#panel::-webkit-scrollbar{width:6px}
+#panel::-webkit-scrollbar-thumb{background:rgba(120,215,255,.22);border-radius:3px}
+.card{
+  background:var(--panel);border:1px solid var(--panel-b);border-radius:16px;padding:14px 15px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 8px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 2px 2px}
+.brand .logo{width:38px;height:38px;flex:0 0 38px;border-radius:11px;
+  background:linear-gradient(145deg,#0f4f6b,#0b2f45);
+  border:1px solid rgba(106,229,255,.35);display:grid;place-items:center;
+  box-shadow:0 0 22px rgba(58,214,255,.22)}
+.brand h1{font-size:19px;font-weight:700;letter-spacing:.5px;line-height:1.2;
+  background:linear-gradient(90deg,#bff0ff,#4fd9ff 60%,#43e0b8);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{font-size:11px;color:var(--txt2);margin-top:3px;letter-spacing:.4px}
+
+.sec-title{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;
+  letter-spacing:1.6px;color:var(--cy2);text-transform:uppercase;margin-bottom:12px;opacity:.95}
+.sec-title i{width:3px;height:13px;border-radius:2px;background:linear-gradient(180deg,var(--cy),var(--teal));
+  display:block;box-shadow:0 0 8px rgba(58,214,255,.6)}
+.sec-title span{color:var(--txt3);font-size:10px;letter-spacing:.5px;font-weight:400;margin-left:auto;text-transform:none}
+
+/* ---- 滑块 ---- */
+.ctrl{margin-bottom:16px}
+.ctrl:last-child{margin-bottom:0}
+.ctrl-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:9px}
+.ctrl-name{font-size:13px;font-weight:600;color:#dcf0ff}
+.ctrl-name em{font-style:normal;font-size:10px;color:var(--txt2);margin-left:6px;letter-spacing:.3px}
+.ctrl-val{font-variant-numeric:tabular-nums;font-size:21px;font-weight:700;line-height:1;
+  color:var(--cy2);text-shadow:0 0 14px rgba(58,214,255,.45)}
+.ctrl-val u{text-decoration:none;font-size:11px;font-weight:500;color:var(--txt2);margin-left:2px}
+.ctrl-sub{font-size:10.5px;color:var(--txt2);margin-top:7px;display:flex;justify-content:space-between;
+  letter-spacing:.2px}
+.ctrl-sub b{color:#a9e9ff;font-weight:600}
+
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;cursor:pointer;display:block}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;
+  background:linear-gradient(90deg,rgba(58,214,255,.75) var(--p,50%),rgba(255,255,255,.10) var(--p,50%));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  margin-top:-6px;background:radial-gradient(circle at 35% 30%,#ffffff,#7fe3ff 45%,#16a6d6);
+  border:1px solid rgba(255,255,255,.85);box-shadow:0 0 0 4px rgba(58,214,255,.16),0 3px 10px rgba(0,0,0,.5);
+  transition:box-shadow .15s}
+input[type=range]:active::-webkit-slider-thumb{box-shadow:0 0 0 7px rgba(58,214,255,.24),0 3px 12px rgba(0,0,0,.5)}
+input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:rgba(255,255,255,.10)}
+input[type=range]::-moz-range-progress{height:6px;border-radius:6px;background:rgba(58,214,255,.75)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ffffff,#7fe3ff 45%,#16a6d6)}
+
+/* ---- 海岸缓陡轴（两端标注） ---- */
+.slope-ends{display:flex;justify-content:space-between;margin-top:6px;
+  font-size:10px;color:var(--txt3);letter-spacing:.2px}
+
+/* ---- 结果读数 ---- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:rgba(255,255,255,.032);border:1px solid rgba(255,255,255,.075);border-radius:11px;
+  padding:9px 10px 8px;position:relative;overflow:hidden}
+.stat small{display:block;font-size:10px;color:var(--txt2);letter-spacing:.3px;margin-bottom:4px}
+.stat .num{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;
+  color:#dff6ff;letter-spacing:-.3px}
+.stat .num u{text-decoration:none;font-size:11px;font-weight:500;color:var(--txt2);margin-left:2px}
+.stat.hi .num{color:var(--cy2)}
+.stat.warn .num{color:var(--yel)}
+.stat.bad .num{color:var(--red)}
+.mini-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.09);margin-top:7px;overflow:hidden}
+.mini-bar i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cy),var(--teal));
+  transition:width .35s cubic-bezier(.2,.8,.3,1),background .35s}
+
+/* 灾害等级条 */
+#riskBox{border-radius:13px;padding:12px 14px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.03);transition:.4s;position:relative;overflow:hidden}
+#riskBox::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--rc,var(--grn));
+  transition:.4s;box-shadow:0 0 16px var(--rc,var(--grn))}
+.risk-row{display:flex;align-items:center;gap:9px}
+.risk-dot{width:9px;height:9px;border-radius:50%;background:var(--rc,var(--grn));flex:0 0 9px;
+  box-shadow:0 0 12px var(--rc,var(--grn));animation:blink 1.6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.risk-name{font-size:15px;font-weight:700;color:var(--rc,var(--grn));letter-spacing:.6px;transition:.4s}
+.risk-txt{font-size:11px;color:var(--txt2);line-height:1.55;margin-top:8px;padding-left:18px;letter-spacing:.2px}
+
+/* ========================= 舞台 ========================= */
+#stage{order:-1;flex:0 0 auto;height:54vh;height:54dvh;position:relative;border-radius:16px;overflow:hidden;min-width:0;
+  border:1px solid rgba(120,215,255,.13);box-shadow:0 12px 40px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.03)}
+canvas{display:block;width:100%;height:100%}
+#warnFlash{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .5s;
+  box-shadow:inset 0 0 130px 30px rgba(255,60,80,.55)}
+#hint{position:absolute;left:18px;bottom:14px;font-size:11px;color:rgba(190,225,245,.5);
+  letter-spacing:.5px;pointer-events:none}
+
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ==================== 控制面板 ==================== -->
+  <aside id="panel">
+
+    <div class="brand">
+      <div class="logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M2 15c2.2-1.6 4.4-1.6 6.6 0s4.4 1.6 6.6 0 4.4-1.6 6.6 0" stroke="#6ee7ff" stroke-width="1.9" stroke-linecap="round"/>
+          <path d="M2 19c2.2-1.6 4.4-1.6 6.6 0s4.4 1.6 6.6 0 4.4-1.6 6.6 0" stroke="#43e0b8" stroke-width="1.5" stroke-linecap="round" opacity=".75"/>
+          <path d="M15 10V3.5M15 3.5l-5.5 6.2H20.5L15 3.5z" stroke="#ffd23f" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1>风暴潮模拟平台</h1>
+        <p>STORM SURGE SIMULATOR · 高中地理课堂演示</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title"><i></i>环境参数<span>拖动滑块观察变化</span></div>
+
+      <!-- 风力 -->
+      <div class="ctrl">
+        <div class="ctrl-head">
+          <div class="ctrl-name">风力等级<em>0—12 级</em></div>
+          <div class="ctrl-val"><span id="windNum">6</span><u>级</u></div>
+        </div>
+        <input type="range" id="windRange" min="0" max="12" step="1" value="6">
+        <div class="ctrl-sub">
+          <span>风速 <b id="windSpeed">12</b> m/s</span>
+          <span id="windName">热带低压</span>
+        </div>
+      </div>
+
+      <!-- 潮位 -->
+      <div class="ctrl">
+        <div class="ctrl-head">
+          <div class="ctrl-name">天文潮位<em>相对平均海平面</em></div>
+          <div class="ctrl-val"><span id="tideNum">+0.5</span><u>m</u></div>
+        </div>
+        <input type="range" id="tideRange" min="-2" max="3" step="0.5" value="0.5">
+        <div class="ctrl-sub">
+          <span>天文状态</span>
+          <span id="tideName">平常潮位</span>
+        </div>
+      </div>
+
+      <!-- 岸形 -->
+      <div class="ctrl" style="margin-bottom:0">
+        <div class="ctrl-head">
+          <div class="ctrl-name">海岸形态<em>拖动调节缓陡</em></div>
+          <div class="ctrl-val" style="font-size:15px"><span id="slopeName">中等坡度</span></div>
+        </div>
+        <input type="range" id="slopeRange" min="0" max="1" step="0.05" value="0.7">
+        <div class="ctrl-sub">
+          <span>近岸水深 <b id="slopeDepth">25</b> m</span>
+          <span>风区长度 <b id="slopeFetch">120</b> km</span>
+        </div>
+        <div class="slope-ends"><span>◀ 陡峭海岸</span><span>平缓海滩 ▶</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title"><i></i>模拟结果<span>实时计算</span></div>
+
+      <div id="riskBox" style="margin-bottom:11px">
+        <div class="risk-row">
+          <div class="risk-dot"></div>
+          <div class="risk-name" id="riskName">安全</div>
+          <div style="margin-left:auto;font-size:10.5px;color:var(--txt2)">受灾建筑
+            <b id="bldNum" style="color:#dff6ff;font-size:13px">0</b>/<span id="bldTotal">8</span></div>
+        </div>
+        <div class="risk-txt" id="riskTxt">当前水位低于海堤顶，城市未受影响。</div>
+      </div>
+
+      <div class="grid2">
+        <div class="stat hi">
+          <small>风增水（风应力抬升）</small>
+          <div class="num"><span id="sWind">0.00</span><u>m</u></div>
+          <div class="mini-bar"><i id="barWind" style="width:0%"></i></div>
+        </div>
+        <div class="stat">
+          <small>气压增水（静压效应）</small>
+          <div class="num"><span id="sPres">0.00</span><u>m</u></div>
+          <div class="mini-bar"><i id="barPres" style="width:0%;background:linear-gradient(90deg,#7c9dff,#b78cff)"></i></div>
+        </div>
+        <div class="stat hi">
+          <small>风暴潮总增水</small>
+          <div class="num"><span id="sTotal">0.00</span><u>m</u></div>
+          <div class="mini-bar"><i id="barSurge" style="width:0%;background:linear-gradient(90deg,#43e0b8,#3ad6ff)"></i></div>
+        </div>
+        <div class="stat">
+          <small>风暴潮最高水位</small>
+          <div class="num"><span id="sLevel">+0.50</span><u>m</u></div>
+          <div class="mini-bar"><i id="barLevel" style="width:0%;background:linear-gradient(90deg,#ffd23f,#ff9a3c)"></i></div>
+        </div>
+        <div class="stat" id="floodStat">
+          <small>城区最大淹没水深</small>
+          <div class="num"><span id="sFlood">0.00</span><u>m</u></div>
+        </div>
+        <div class="stat">
+          <small>越堤高度</small>
+          <div class="num"><span id="sOver">0.00</span><u>m</u></div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ==================== 舞台 ==================== -->
+  <main id="stage">
+    <canvas id="cv"></canvas>
+    <div id="warnFlash"></div>
+    <div id="hint">拖动下方滑块 · 观察变化</div>
+  </main>
+</div>
+
+<script>
+"use strict";
+/* ============================================================================
+   风暴潮模拟平台
+   ---------------------------------------------------------------------------
+   物理模型（教学简化版，量级与真实风暴潮一致）
+     风应力      τ  = ρ_air · Cd(V) · V²
+     风增水      Δh = τ · L / (ρ_w · g · D) · A       L=风区长度 D=水深 A=地形放大系数
+     气压增水    Δh_p = Δp / (ρ_w·g) ≈ Δp(cm) ,  Δp = 70·(V/Vmax)²  hPa
+     风暴潮水位  H  = 天文潮位 + 风增水 + 气压增水
+     越堤        = H - 海堤顶高程
+     淹没水深    = H - 城市地面高程（仅当海水越顶后，堤后城区才进水）
+   ========================================================================== */
+
+/* ------------------------------ 参数表 ------------------------------ */
+/* 蒲福风级 0—12 级的各级代表风速（m/s），界面统一用“N 级风”表述 */
+const BEAUFORT = [
+  0.1, 0.9, 2.5, 4.4, 6.7, 9.4, 12.3, 15.5, 18.9, 22.6, 26.5, 30.6, 34.8
+];
+const V_MAX = 34.8;
+const RHO_AIR = 1.225, RHO_W = 1025, G = 9.81;
+
+/* 热带气旋等级（GB/T 19201），以风力等级划分：
+   6—7 级 热带低压 · 8—9 级 热带风暴 · 10—11 级 强热带风暴 · 12 级 台风 */
+function tcCat(w){
+  if (w <= 5) return "";
+  if (w <= 7) return "热带低压";
+  if (w <= 9) return "热带风暴";
+  if (w <= 11) return "强热带风暴";
+  return "台风";
+}
+function windTag(w){
+  const c = tcCat(w);
+  return c ? (w + " 级风 · " + c) : (w + " 级风");
+}
+
+/* 海岸形态：用单一“缓陡”参数（0=陡峭 → 1=平缓）在两套基准岸型间线性插值 */
+const SHORE_PROFILES = {
+  steep: { fetch:100000, depth:34, amp:1.00, ground:3.0, wallH:1.5,
+           shoreT:0.50, plateauT:0.63, curve:0.45, bottomK:0.92, bottomP:9   },
+  gentle:{ fetch:130000, depth:18, amp:1.34, ground:1.6, wallH:2.0,
+           shoreT:0.44, plateauT:0.60, curve:1.8,  bottomK:0.80, bottomP:1.5 }
+};
+function shoreProfile(slope){
+  const a = SHORE_PROFILES.steep, b = SHORE_PROFILES.gentle;
+  const k = Math.min(1, Math.max(0, slope));
+  const L = (x,y) => x + (y-x)*k;
+  return {
+    name: k < 0.25 ? "陡峭海岸" : k < 0.5 ? "较陡海岸" : k < 0.75 ? "中等坡度" : k < 0.9 ? "较缓海滩" : "平缓海滩",
+    fetch:   L(a.fetch,   b.fetch),
+    depth:   L(a.depth,   b.depth),
+    amp:     L(a.amp,     b.amp),
+    ground:  L(a.ground,  b.ground),
+    wallH:   L(a.wallH,   b.wallH),
+    shoreT:  L(a.shoreT,  b.shoreT),
+    plateauT:L(a.plateauT,b.plateauT),
+    curve:   L(a.curve,   b.curve),
+    bottomK: L(a.bottomK, b.bottomK),
+    bottomP: L(a.bottomP, b.bottomP),
+    inlandRise: 4.6
+  };
+}
+
+/* ------------------------------ 状态 ------------------------------ */
+const state = { wind:6, tide:0.5, slope:0.7 };
+const view  = { wind:6, tide:0.5, surge:0, level:0.5 };   // 平滑显示值
+let city = [];
+
+/* ------------------------------ 物理核心 ------------------------------ */
+function landHeight(S, t){
+  if (t <= S.shoreT) return null;                       // 该处尚为海面
+  if (t < S.plateauT){
+    const s = (t - S.shoreT) / (S.plateauT - S.shoreT);
+    return S.ground * Math.pow(s, S.curve);
+  }
+  const s = (t - S.plateauT) / (1 - S.plateauT);
+  return S.ground + S.inlandRise * s;                   // 内陆缓慢抬升
+}
+function landHeightSafe(S, t){
+  const h = landHeight(S, t);
+  return h === null ? 0 : h;
+}
+
+function physics(wind, tide, slope){
+  const S = shoreProfile(slope);
+  const V = BEAUFORT[wind];
+  const Cd = (0.8 + 0.065 * V) * 1e-3;                  // 拖曳系数随风速增大
+  const tau = RHO_AIR * Cd * V * V;                     // N/m²
+  const surgeWind = tau * S.fetch / (RHO_W * G * S.depth) * S.amp;
+  const presDrop = 70 * Math.pow(V / V_MAX, 2);         // hPa
+  const surgePres = presDrop / 100;                     // m  (1hPa ≈ 1cm)
+  const surge = surgeWind + surgePres;
+  const level = tide + surge;
+  const wall  = S.ground + S.wallH;                     // 海堤顶高程
+  const over  = level - wall;                           // 越堤高度
+  // 海堤是最后防线：只有海水越过堤顶，堤后城区才会进水
+  const flood = over > 0 ? Math.max(0, level - S.ground) : 0;   // 城区淹没水深
+  return {S, V, Cd, tau, surgeWind, surgePres, surge, level, wall, over, flood, presDrop};
+}
+
+function evaluate(ph){
+  const total  = city.filter(b => !b.bg).length;
+  const flooded = ph.over > 0 ? city.filter(b => !b.bg && b.base < ph.level).length : 0;
+  let lvl, name, color, txt;
+
+  if (ph.over <= 0){
+    const gap = ph.wall - ph.level;
+    if (gap > 1.0){ lvl=0; name="安全"; color="#3ddc84";
+      txt="当前水位低于海堤顶 "+gap.toFixed(1)+" m，海水被海堤挡住，城市未受影响。"; }
+    else { lvl=1; name="水位预警"; color="#ffd23f";
+      txt="水位已接近海堤顶（仅差 "+gap.toFixed(1)+" m），需加强巡查与预报。"; }
+  } else if (ph.over <= 1.0){
+    lvl=4; name="越堤洪水"; color="#ff9a3c";
+    txt="海水越顶 "+ph.over.toFixed(1)+" m，堤后低地开始进水（淹没水深约 "+ph.flood.toFixed(1)+" m），"+flooded+"/"+total+" 栋建筑受灾。";
+  } else if (ph.over <= 3.0){
+    lvl=5; name="严重风暴潮灾"; color="#ff4d5e";
+    txt="海水越顶 "+ph.over.toFixed(1)+" m，淹没水深达 "+ph.flood.toFixed(1)+" m，大片城区被淹，"+flooded+"/"+total+" 栋建筑受灾，需紧急疏散。";
+  } else {
+    lvl=6; name="灾难性风暴潮"; color="#c9122c";
+    txt="海水越顶 "+ph.over.toFixed(1)+" m，淹没水深 "+ph.flood.toFixed(1)+" m，海水深入内陆，"+(flooded===total?"全部":"大部分")+"建筑没入水中，属特大灾害。";
+  }
+  return {flooded, total, lvl, name, color, txt};
+}
+
+/* ------------------------------ 城市建筑 ------------------------------ */
+function buildCity(slope){
+  const S = shoreProfile(slope);
+  const nf = 7, nb = 6, arr = [];
+  const t0 = S.plateauT + 0.050, t1 = 0.905;
+  // 前排（参与受灾统计）
+  for (let i=0;i<nf;i++){
+    const t = t0 + i * ((t1 - t0) / (nf-1));
+    const w = 0.031 + ((i*7) % 4) * 0.0052;                // 宽度（归一化，交错变化）
+    const h = 3.0 + ((i*41) % 5) * 0.75 + (i % 3 === 1 ? 1.5 : 0);
+    arr.push({ t, w, h, base: landHeightSafe(S, t), seed:(i*97)%100, bg:false });
+  }
+  // 后排（仅作纵深陪衬，不参与统计）
+  for (let i=0;i<nb;i++){
+    const t = t0 + 0.024 + i * ((t1 - t0 - 0.048) / (nb-1));
+    const w = 0.026 + ((i*5) % 3) * 0.0042;
+    const h = 2.4 + ((i*29) % 4) * 0.6;
+    arr.push({ t, w, h, base: landHeightSafe(S, t), seed:(i*53)%100, bg:true });
+  }
+  return arr;
+}
+
+/* ============================================================================
+   渲染
+   ========================================================================== */
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+const FONT = getComputedStyle(document.body).fontFamily || '"Microsoft YaHei",sans-serif';
+let W = 0, H = 0, DPR = 1, MSL_Y = 0, PPM = 25;
+
+function resize(){
+  const r = document.getElementById("stage").getBoundingClientRect();
+  W = Math.max(320, r.width); H = Math.max(260, r.height);
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.round(W*DPR); cv.height = Math.round(H*DPR);
+  cv.style.width = W+"px"; cv.style.height = H+"px";
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  MSL_Y = H * 0.55;                 // 平均海平面所在屏幕 y
+  PPM   = H * 0.026;                // 每米像素
+}
+function Y(m){ return MSL_Y - m * PPM; }             // 高程(米) → 屏幕 y
+function X(t){ return t * W; }                       // 归一化 → 屏幕 x
+
+/* --- 水面高程（含风增水的向岸倾斜） --- */
+function surfaceHeight(ph, t){
+  const s = Math.min(1, Math.max(0, t / ph.S.shoreT));
+  return ph.tide + ph.surgePres + ph.surgeWind * Math.pow(s, 1.35);
+}
+/* --- 波动 --- */
+function waveOffset(t, time, amp){
+  const a = amp;
+  return a * ( Math.sin(t*22.0 - time*2.10)*0.55
+             + Math.sin(t*41.0 - time*3.30)*0.34
+             + Math.sin(t*11.0 - time*1.15)*0.42
+             + Math.sin(t*68.0 - time*5.10)*0.16 );
+}
+/* --- 海底（屏幕比例深度 0~1） --- */
+function seabedDepth(S, s){                          // s: 0=外海 → 1=岸线
+  const k = S.bottomK, p = S.bottomP;
+  return k * Math.pow(Math.max(0, 1 - Math.pow(s, p)), 1.0);
+}
+function seabedY(S, t){
+  const s = Math.min(1, Math.max(0, t / S.shoreT));
+  const d = seabedDepth(S, s);
+  return MSL_Y + d * (H - MSL_Y - 8);
+}
+
+/* --- 调色板（随风力变暗） --- */
+function palette(wind){
+  const k = wind / 12;                                // 0..1 天气恶化程度
+  return {
+    skyTop:  mix([16,44,74],  [8,14,26],  k),
+    skyMid:  mix([58,110,152],[22,32,50], k),
+    skyLow:  mix([132,186,214],[58,72,92],k),
+    seaLight:mix([64,178,206],[44,96,124],k),
+    seaDeep: mix([10,44,66],  [7,22,34],  k),
+    landTop: mix([102,178,124],[54,94,80], k),
+    landBot: mix([42,84,74],  [20,36,40], k),
+    sand:    mix([224,206,160],[150,140,112],k),
+    rock:    mix([132,138,150],[74,80,92],k),
+    haze:    mix([150,205,232],[92,110,130],k),
+    amb:     1 - k*0.42
+  };
+}
+function mix(a,b,k){
+  return "rgb("+Math.round(a[0]+(b[0]-a[0])*k)+","+
+                Math.round(a[1]+(b[1]-a[1])*k)+","+
+                Math.round(a[2]+(b[2]-a[2])*k)+")";
+}
+function rgba(c,a){ return c.replace("rgb(","rgba(").replace(")",","+a+")"); }
+
+/* ------------------------------ 粒子 ------------------------------ */
+let rain = [], spray = [], windLines = [], clouds = [];
+function seedClouds(){
+  clouds = [];
+  for (let i=0;i<7;i++){
+    clouds.push({ x: Math.random()*W*1.4 - W*0.2, y: H*(0.05+Math.random()*0.22),
+                  s: 0.6+Math.random()*1.1, a: 0.15+Math.random()*0.35, v: 0.4+Math.random()*0.7 });
+  }
+  windLines = [];
+  for (let i=0;i<46;i++) windLines.push({ y: H*(0.03+Math.random()*0.30), x: Math.random()*W,
+    len: 20+Math.random()*80, a: 0.05+Math.random()*0.12 });
+}
+
+/* ============================================================================
+   主绘制
+   ========================================================================== */
+let time = 0, lastTs = 0;
+
+function frame(ts){
+  const dt = Math.min(0.05, (ts - lastTs)/1000 || 0.016);
+  lastTs = ts; time += dt;
+
+  /* --- 平滑过渡 --- */
+  const phTarget = physics(state.wind, state.tide, state.slope);
+  view.wind  += (state.wind - view.wind) * Math.min(1, dt*5);
+  view.tide  += (state.tide - view.tide) * Math.min(1, dt*5);
+  view.surge += (phTarget.surge - view.surge) * Math.min(1, dt*4.5);
+  view.level += (phTarget.level - view.level) * Math.min(1, dt*4.5);
+
+  // 供视觉使用的“平滑物理量”
+  const ph = {
+    ...phTarget,
+    tide:  view.tide,
+    surge: view.surge,
+    surgeWind: phTarget.surge * (phTarget.surgeWind / (phTarget.surge||1)),
+    surgePres: phTarget.surge * (phTarget.surgePres / (phTarget.surge||1)),
+    level: view.level,
+    over:  view.level - phTarget.wall,
+    flood: Math.max(0, view.level - phTarget.S.ground)
+  };
+  const windV = view.wind;
+  const P = palette(windV);
+  const S = phTarget.S;
+  const farSeaY = Y(ph.tide);                 // 外海（开阔海面）当前水位高度
+
+  ctx.clearRect(0,0,W,H);
+
+  drawSky(P, windV, farSeaY);
+  drawHaze(P, S, windV, farSeaY);
+  drawSea(P, ph, S, windV);
+  drawLand(P, S, ph);
+  drawLandDetail(P, S);
+  drawSeawall(P, S, ph);
+  drawCity(P, S, ph, windV);
+  drawFlood(P, S, ph, windV);
+  drawWaves(P, ph, S, windV);
+  drawParticles(P, windV, ph, S);
+  drawGauge(P, S, ph);
+  drawLabels(P, S, ph);
+
+  updatePanel(phTarget, windV);
+
+  requestAnimationFrame(frame);
+}
+
+/* ---------- 天空 ---------- */
+function drawSky(P, wind, farSeaY){
+  const g = ctx.createLinearGradient(0,0,0,Math.max(40, farSeaY));
+  g.addColorStop(0, P.skyTop); g.addColorStop(0.55, P.skyMid); g.addColorStop(1, P.skyLow);
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  // 太阳（叠加混合，随风力淡出）
+  const sunA = Math.max(0.18, 1 - wind/13);
+  const sx = W*0.78, sy = Math.max(34, farSeaY - H*0.36), r = H*0.042;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const sg = ctx.createRadialGradient(sx,sy,0,sx,sy,r*8);
+  sg.addColorStop(0,    "rgba(255,250,232,"+(0.80*sunA)+")");
+  sg.addColorStop(0.055,"rgba(255,235,180,"+(0.50*sunA)+")");
+  sg.addColorStop(0.22, "rgba(255,206,132,"+(0.20*sunA)+")");
+  sg.addColorStop(1,    "rgba(255,178,88,0)");
+  ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(sx,sy,r*8,0,7); ctx.fill();
+  ctx.restore();
+
+  // 云（径向渐变柔边）
+  const dark = wind/12;
+  const cbase = [Math.round(242-140*dark), Math.round(247-134*dark), Math.round(253-126*dark)];
+  const cstr = cbase.join(",");
+  for (const c of clouds){
+    c.x += (5 + wind*8.5) * c.v * 0.016;
+    if (c.x > W*1.3) { c.x = -W*0.42; c.y = H*(0.04+Math.random()*0.28); }
+    if (c.y > farSeaY - H*0.13) c.y = farSeaY - H*(0.22+Math.random()*0.18);
+    const rr = H*0.052 * c.s;
+    ctx.save();
+    ctx.globalAlpha = c.a * (0.55 + dark*0.85);
+    for (let k=0;k<5;k++){
+      const ox = c.x + (k-2)*rr*0.78;
+      const oy = c.y + Math.abs(k-2)*rr*0.12;
+      const rad = rr*(1.45 - Math.abs(k-2)*0.24);
+      const cg = ctx.createRadialGradient(ox, oy-rad*0.30, rad*0.06, ox, oy, rad);
+      cg.addColorStop(0,   "rgba("+cstr+",0.85)");
+      cg.addColorStop(0.5, "rgba("+cstr+",0.38)");
+      cg.addColorStop(1,   "rgba("+cstr+",0)");
+      ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(ox,oy,rad,0,7); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // 风的流线
+  ctx.save();
+  ctx.strokeStyle = "rgba(220,240,255,"+(0.10 + wind*0.022)+")";
+  ctx.lineWidth = 1.3;
+  for (const l of windLines){
+    l.x += (10 + wind*46) * 0.016;
+    if (l.x > W+l.len) l.x = -l.len;
+    ctx.globalAlpha = l.a * (0.5 + wind/12);
+    ctx.beginPath(); ctx.moveTo(l.x, l.y); ctx.lineTo(l.x+l.len, l.y); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/* ---------- 远处海岸（空气透视） ---------- */
+function drawHaze(P, S, wind, farSeaY){
+  const hy = farSeaY;
+  const g = ctx.createLinearGradient(0, hy-H*0.10, 0, hy);
+  g.addColorStop(0, rgba(P.haze, 0.0)); g.addColorStop(1, rgba(P.haze, 0.55));
+  ctx.fillStyle = g; ctx.fillRect(0, hy-H*0.10, W, H*0.10);
+
+  // 远方山脊/岸线剪影
+  ctx.beginPath(); ctx.moveTo(0, hy);
+  const pts = [[0.02,-0.055],[0.10,-0.030],[0.20,-0.062],[0.30,-0.024],
+               [0.42,-0.050],[0.55,-0.020],[0.68,-0.044],[0.82,-0.018],[1.0,-0.038]];
+  for (let i=0;i<pts.length;i++){
+    const [px, py] = pts[i];
+    if (i===0) ctx.lineTo(W*px, hy + H*py);
+    else {
+      const [qx] = pts[i-1];
+      const midx = W*(qx+px)/2;
+      ctx.quadraticCurveTo(midx, hy + H*py*1.35, W*px, hy + H*py);
+    }
+  }
+  ctx.lineTo(W,hy); ctx.closePath();
+  ctx.fillStyle = rgba(P.haze, 0.34); ctx.fill();
+  ctx.fillStyle = rgba(P.seaDeep, 0.55);
+  ctx.fillRect(0, hy - 1.5, W, 4);
+}
+
+/* ---------- 海体 ---------- */
+function drawSea(P, ph, S, wind){
+  const N = 130, shX = X(S.shoreT);
+
+  // 深水底：海床
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  for (let i=0;i<=N;i++){ const t = S.shoreT * i/N; ctx.lineTo(X(t), seabedY(S,t)); }
+  ctx.lineTo(shX, H); ctx.closePath();
+  const bg = ctx.createLinearGradient(0, MSL_Y, 0, H);
+  bg.addColorStop(0, "#1d4d66"); bg.addColorStop(0.5, "#102b3d"); bg.addColorStop(1, "#08161f");
+  ctx.fillStyle = bg; ctx.fill();
+  // 海床纹理：平行细砂纹
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  for (let i=0;i<=N;i++){ const t = S.shoreT * i/N; ctx.lineTo(X(t), seabedY(S,t)); }
+  ctx.lineTo(shX, H); ctx.closePath(); ctx.clip();
+  ctx.strokeStyle = "rgba(120,180,205,.055)"; ctx.lineWidth = 1;
+  for (let y = MSL_Y; y < H; y += 7){
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y+6); ctx.stroke();
+  }
+  ctx.restore();
+
+  // 水体：水面 → 海床
+  ctx.beginPath();
+  const surf = [];
+  for (let i=0;i<=N;i++){
+    const t = S.shoreT * i/N;
+    const amp = (2.0 + wind*2.2) * (0.35 + 0.65*Math.min(1, t/S.shoreT));
+    const y = Y(surfaceHeight(ph, t)) + waveOffset(t, time, amp);
+    surf.push([X(t), y]);
+    if (i===0) ctx.moveTo(X(t), y); else ctx.lineTo(X(t), y);
+  }
+  for (let i=N;i>=0;i--){ const t = S.shoreT * i/N; ctx.lineTo(X(t), seabedY(S,t)); }
+  ctx.closePath();
+  const wg = ctx.createLinearGradient(0, Y(ph.level+1)-20, 0, H);
+  wg.addColorStop(0, rgba(P.seaLight, 0.92));
+  wg.addColorStop(0.10, rgba(P.seaLight, 0.72));
+  wg.addColorStop(0.55, rgba(P.seaDeep, 0.94));
+  wg.addColorStop(1, rgba(P.seaDeep, 1));
+  ctx.fillStyle = wg; ctx.fill();
+
+  // 水面高光带（纵深错觉）
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(surf[0][0], surf[0][1]);
+  for (let i=1;i<surf.length;i++) ctx.lineTo(surf[i][0], surf[i][1]);
+  ctx.lineTo(shX, H); ctx.lineTo(0, H); ctx.closePath();
+  ctx.clip();
+  ctx.globalAlpha = 0.34;
+  ctx.beginPath();
+  ctx.moveTo(surf[0][0], surf[0][1]);
+  for (let i=1;i<surf.length;i++) ctx.lineTo(surf[i][0], surf[i][1]);
+  for (let i=surf.length-1;i>=0;i--) ctx.lineTo(surf[i][0], surf[i][1] - H*0.085);
+  ctx.closePath();
+  ctx.fillStyle = rgba(P.seaLight, 0.9); ctx.fill();
+  ctx.restore();
+
+  // 水面描边
+  ctx.beginPath();
+  ctx.moveTo(surf[0][0], surf[0][1]);
+  for (let i=1;i<surf.length;i++) ctx.lineTo(surf[i][0], surf[i][1]);
+  ctx.strokeStyle = "rgba(180,240,255,"+(0.30 + wind*0.030)+")";
+  ctx.lineWidth = 1.6; ctx.stroke();
+
+  // 向岸的风增水坡度参考虚线（教学提示）
+  if (ph.surgeWind > 0.25){
+    ctx.save();
+    ctx.setLineDash([7,7]); ctx.lineWidth = 1.2;
+    ctx.strokeStyle = "rgba(255,210,63,.45)";
+    ctx.beginPath();
+    ctx.moveTo(0, Y(ph.tide + ph.surgePres));
+    ctx.lineTo(shX, Y(ph.tide + ph.surgePres + ph.surgeWind));
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+/* ---------- 陆地 ---------- */
+function drawLand(P, S, ph){
+  const N = 90;
+  ctx.beginPath();
+  ctx.moveTo(X(S.shoreT), Y(0));
+  for (let i=0;i<=N;i++){
+    const t = S.shoreT + (1-S.shoreT)*i/N;
+    ctx.lineTo(X(t), Y(landHeightSafe(S,t)));
+  }
+  ctx.lineTo(W, H); ctx.lineTo(X(S.shoreT), H); ctx.closePath();
+  const lg = ctx.createLinearGradient(0, Y(S.ground+S.inlandRise+1), 0, H);
+  lg.addColorStop(0, P.landTop);
+  lg.addColorStop(0.16, P.landTop);
+  lg.addColorStop(0.60, P.landBot);
+  lg.addColorStop(1, "#0a181c");
+  ctx.fillStyle = lg; ctx.fill();
+
+  // 岸线滩面：贴着地表向下的一条带，向内陆淡出
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(X(S.shoreT), Y(0));
+  for (let i=0;i<=N;i++){
+    const t = S.shoreT + (1-S.shoreT)*i/N;
+    ctx.lineTo(X(t), Y(landHeightSafe(S,t)));
+  }
+  ctx.lineTo(W, H); ctx.lineTo(X(S.shoreT), H); ctx.closePath();
+  ctx.clip();
+  const beachColor = (S.bottomP > 5) ? P.rock : P.sand;
+  const band = ctx.createLinearGradient(X(S.shoreT), 0, X(S.shoreT + 0.22), 0);
+  band.addColorStop(0,    rgba(beachColor, 0.92));
+  band.addColorStop(0.45, rgba(beachColor, 0.42));
+  band.addColorStop(1,    rgba(beachColor, 0));
+  ctx.strokeStyle = band;
+  ctx.lineWidth = H*0.075;
+  ctx.lineJoin = "round"; ctx.lineCap = "butt";
+  ctx.beginPath();
+  ctx.moveTo(X(S.shoreT), Y(0) + H*0.037);
+  for (let i=0;i<=N;i++){
+    const t = S.shoreT + (1-S.shoreT)*i/N;
+    ctx.lineTo(X(t), Y(landHeightSafe(S,t)) + H*0.037);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  // 地表线
+  ctx.beginPath();
+  ctx.moveTo(X(S.shoreT), Y(0));
+  for (let i=0;i<=N;i++){
+    const t = S.shoreT + (1-S.shoreT)*i/N;
+    ctx.lineTo(X(t), Y(landHeightSafe(S,t)));
+  }
+  ctx.strokeStyle = "rgba(190,255,225,.30)"; ctx.lineWidth = 1.5; ctx.stroke();
+}
+
+/* ---------- 陆地细部：海岸地质剖面 + 滨海绿带 + 地表植被 ---------- */
+let strataPattern = null;
+function makeStrataPattern(){
+  const c = document.createElement("canvas");
+  c.width = 16; c.height = 16;
+  const g = c.getContext("2d");
+  g.fillStyle = "rgba(0,0,0,.24)";
+  g.beginPath(); g.arc(3.5,4,1.3,0,7); g.fill();
+  g.beginPath(); g.arc(11,9.5,0.9,0,7); g.fill();
+  g.beginPath(); g.arc(7,13.5,1.1,0,7); g.fill();
+  g.fillStyle = "rgba(255,255,255,.07)";
+  g.fillRect(8,2,6,1);
+  g.fillRect(0,11,4,1);
+  return ctx.createPattern(c, "repeat");
+}
+
+function drawLandDetail(P, S){
+  const N = 110, k = H / 1052;
+  const groundAt = t => Y(landHeightSafe(S, t));
+  const landPath = () => {
+    ctx.beginPath();
+    ctx.moveTo(X(S.shoreT), Y(0));
+    for (let i=0;i<=N;i++){
+      const t = S.shoreT + (1-S.shoreT)*i/N;
+      ctx.lineTo(X(t), groundAt(t));
+    }
+    ctx.lineTo(W, H); ctx.lineTo(X(S.shoreT), H); ctx.closePath();
+  };
+
+  // ---- ① 海岸地质剖面：沉积层 ----
+  const STRATA = [
+    { d0:   0, d1:  15, c: "#4b4531", top: "rgba(20,17,10,.50)" },  // 表土
+    { d0:  15, d1:  48, c: "#a68b5b", top: "rgba(92,70,38,.45)" },  // 砂层
+    { d0:  48, d1: 104, c: "#86917a", top: "rgba(58,66,50,.40)" },  // 粉砂层
+    { d0: 104, d1: 190, c: "#5e717d", top: "rgba(36,46,54,.45)" },  // 黏土层
+    { d0: 190, d1: 320, c: "#46525d", top: "rgba(26,34,42,.48)" },  // 强风化基岩
+    { d0: 320, d1:1400, c: "#2f3943", top: null }                   // 基岩
+  ];
+  const lineAt = (d, N2) => {
+    ctx.beginPath();
+    ctx.moveTo(X(S.shoreT), groundAt(S.shoreT) + d*k);
+    for (let i=1;i<=N2;i++){
+      const t = S.shoreT + (1-S.shoreT)*i/N2;
+      ctx.lineTo(X(t), groundAt(t) + d*k);
+    }
+  };
+  ctx.save();
+  landPath(); ctx.clip();
+
+  for (const st of STRATA){
+    ctx.beginPath();
+    ctx.moveTo(X(S.shoreT), groundAt(S.shoreT) + st.d0*k);
+    for (let i=1;i<=N;i++){
+      const t = S.shoreT + (1-S.shoreT)*i/N;
+      ctx.lineTo(X(t), groundAt(t) + st.d0*k);
+    }
+    for (let i=N;i>=0;i--){
+      const t = S.shoreT + (1-S.shoreT)*i/N;
+      ctx.lineTo(X(t), groundAt(t) + st.d1*k);
+    }
+    ctx.closePath();
+    ctx.fillStyle = st.c; ctx.fill();
+    // 层界（顶部界线，形成清晰层理）
+    if (st.top){
+      lineAt(st.d0, N);
+      ctx.strokeStyle = st.top; ctx.lineWidth = 1.6; ctx.stroke();
+    }
+  }
+
+  // 砂层 / 粉砂层内的水平层理
+  for (const li of [1, 2]){
+    const st = STRATA[li];
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(X(S.shoreT), groundAt(S.shoreT) + st.d0*k);
+    for (let i=1;i<=N;i++){
+      const t = S.shoreT + (1-S.shoreT)*i/N;
+      ctx.lineTo(X(t), groundAt(t) + st.d0*k);
+    }
+    for (let i=N;i>=0;i--){
+      const t = S.shoreT + (1-S.shoreT)*i/N;
+      ctx.lineTo(X(t), groundAt(t) + st.d1*k);
+    }
+    ctx.closePath(); ctx.clip();
+    ctx.strokeStyle = "rgba(255,255,255,.11)"; ctx.lineWidth = 1;
+    for (let q=1;q<=5;q++){
+      lineAt(st.d0 + (st.d1 - st.d0)*q/6, 56);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // 层理纹理
+  if (!strataPattern) strataPattern = makeStrataPattern();
+  ctx.fillStyle = strataPattern;
+  ctx.fillRect(X(S.shoreT), 0, W, H);
+  ctx.restore();
+
+  // ---- ② 滨海大道 + 行道树 ----
+  const tA = S.plateauT + 0.017, tB = S.plateauT + 0.046;
+  ctx.save();
+  ctx.strokeStyle = "rgba(152,162,176,.42)";
+  ctx.lineWidth = Math.max(4, H*0.009);
+  ctx.lineCap = "butt";
+  ctx.beginPath();
+  ctx.moveTo(X(tA), groundAt(tA) + H*0.013);
+  for (let i=1;i<=16;i++){
+    const t = tA + (tB-tA)*i/16;
+    ctx.lineTo(X(t), groundAt(t) + H*0.013);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  for (let i=0;i<7;i++){
+    const t = tA + 0.004 + (tB-tA-0.008) * i/6;
+    const x = X(t), y = groundAt(t) + H*0.013;
+    const s = 0.85 + ((i*37)%11)/11 * 0.5;
+    const th = H*0.028*s, tr = H*0.010*s;
+    ctx.fillStyle = "rgba(48,38,28,.9)";
+    ctx.fillRect(x-1.4, y-th*0.42, 2.8, th*0.42);
+    ctx.fillStyle = i%2 ? "rgba(66,126,86,.95)" : "rgba(80,146,96,.95)";
+    ctx.beginPath(); ctx.arc(x, y-th*0.60, tr, 0, 7); ctx.fill();
+    ctx.fillStyle = "rgba(124,196,136,.35)";
+    ctx.beginPath(); ctx.arc(x-tr*0.3, y-th*0.60-tr*0.3, tr*0.55, 0, 7); ctx.fill();
+  }
+
+  // ---- ③ 地表植被斑点 ----
+  ctx.save();
+  const vegTop = () => {
+    ctx.beginPath();
+    ctx.moveTo(X(S.shoreT), groundAt(S.shoreT));
+    for (let i=0;i<=N;i++){
+      const t = S.shoreT + (1-S.shoreT)*i/N;
+      ctx.lineTo(X(t), groundAt(t));
+    }
+    for (let i=N;i>=0;i--){
+      const t = S.shoreT + (1-S.shoreT)*i/N;
+      ctx.lineTo(X(t), groundAt(t) + H*0.016);
+    }
+    ctx.closePath();
+  };
+  vegTop(); ctx.clip();
+  ctx.globalAlpha = 0.55;
+  for (let i=0;i<520;i++){
+    const r1 = ((i*73)%997)/997, r2 = ((i*151)%883)/883;
+    const t  = S.shoreT + (1-S.shoreT)*(0.015 + r1*0.98);
+    if (t >= 0.9995) continue;
+    const x = X(t), y = groundAt(t) + 1 + r2*H*0.015;
+    ctx.fillStyle = (i%4===0) ? "rgba(168,222,168,.75)" : "rgba(26,66,42,.70)";
+    ctx.beginPath(); ctx.ellipse(x, y, 1.6 + (i%4)*0.7, 0.9 + (i%3)*0.5, 0, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+
+  // 剖面说明标签（置于剖面底部）
+  ctx.save();
+  ctx.globalAlpha = 0.60;
+  ctx.fillStyle = "#c3d4e4";
+  ctx.font = "600 9.5px " + FONT; ctx.textAlign = "left";
+  ctx.fillText("海岸地质剖面（示意）", X(S.shoreT) + 16, H - 22);
+  ctx.restore();
+}
+
+/* ---------- 海堤（类 3D 体块） ---------- */
+function drawSeawall(P, S, ph){
+  const t0 = S.plateauT - 0.030, t1 = S.plateauT + 0.014;
+  const x0 = X(t0), x1 = X(t1);
+  const baseY  = Y(landHeightSafe(S, S.plateauT));
+  const topY   = Y(S.ground + S.wallH);
+  const OX = 13, OY = -10;                                  // 斜轴测偏移
+  const capH = Math.max(5, (baseY - topY) * 0.16);
+
+  // 临海侧抛石护坡
+  ctx.save();
+  ctx.strokeStyle = "#57606b";
+  ctx.lineWidth = Math.max(7, H*0.012); ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(x0 - 2, baseY + 3);
+  for (let i=1;i<=12;i++){
+    const t = S.plateauT - 0.002 - 0.050*i/12;
+    ctx.lineTo(X(t), Y(landHeightSafe(S, t)) + 3);
+  }
+  ctx.stroke();
+  for (let i=0;i<15;i++){
+    const t  = S.plateauT - 0.006 - 0.044*((i*37) % 15)/15;
+    const x  = X(t) + (((i*53)%97)/97 - 0.5)*7;
+    const y  = Y(landHeightSafe(S, t)) + 3 + (((i*71)%89)/89 - 0.5)*7;
+    ctx.fillStyle = i%2 ? "#6d7783" : "#4f5863";
+    ctx.beginPath();
+    ctx.ellipse(x, y, 3.2 + (i%3)*1.1, 2.3 + (i%2)*0.9, ((i*31)%17)/17 - 0.5, 0, 7);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  // 侧面
+  ctx.beginPath();
+  ctx.moveTo(x1, topY); ctx.lineTo(x1+OX, topY+OY);
+  ctx.lineTo(x1+OX, baseY+OY); ctx.lineTo(x1, baseY); ctx.closePath();
+  ctx.fillStyle = "#3f4a56"; ctx.fill();
+
+  // 正面
+  const fg = ctx.createLinearGradient(0, topY, 0, baseY);
+  fg.addColorStop(0, "#a7b3c1"); fg.addColorStop(1, "#616c79");
+  ctx.fillStyle = fg; ctx.fillRect(x0, topY, x1-x0, baseY-topY);
+
+  // 堤身砌块：横缝 + 竖缝
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x0, topY, x1-x0, baseY-topY); ctx.clip();
+  ctx.strokeStyle = "rgba(32,40,50,.38)"; ctx.lineWidth = 1;
+  const rowH = Math.max(9, (baseY-topY)*0.26);
+  for (let y = topY+rowH; y < baseY; y += rowH){
+    ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+  }
+  for (let y = topY, r = 0; y < baseY; y += rowH, r++){
+    const off = (r % 2) ? 6.5 : 0;
+    for (let x = x0+off+10; x < x1; x += 13){
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, Math.min(baseY, y+rowH)); ctx.stroke();
+    }
+  }
+  ctx.restore();
+
+  // 顶面 + 压顶
+  ctx.beginPath();
+  ctx.moveTo(x0, topY); ctx.lineTo(x0+OX, topY+OY);
+  ctx.lineTo(x1+OX, topY+OY); ctx.lineTo(x1, topY); ctx.closePath();
+  ctx.fillStyle = "#c8d4e0"; ctx.fill();
+  ctx.fillStyle = "#e3ebf3";
+  ctx.fillRect(x0, topY, x1-x0, capH);
+
+  // 越浪时的红闪
+  if (ph.over > 0){
+    ctx.save();
+    ctx.globalAlpha = 0.40 + 0.40*Math.abs(Math.sin(time*9));
+    ctx.fillStyle = "#ff4d5e";
+    ctx.fillRect(x0-2, topY-4, x1-x0+4, 6);
+    ctx.restore();
+  }
+}
+
+/* ---------- 城市（类 3D 体块） ---------- */
+function drawCity(P, S, ph, wind){
+  const fY = Y(ph.level);
+  for (const b of city) if (b.bg)  drawBuilding(b, ph, fY, { dx: 26, dy: -20, alpha: 0.38 });
+  for (const b of city) if (!b.bg) drawBuilding(b, ph, fY, { dx: 0,  dy: 0,   alpha: 1 });
+}
+
+function drawBuilding(b, ph, fY, O){
+  const OX = 10, OY = -7;
+  ctx.save();
+  ctx.globalAlpha = O.alpha;
+  ctx.translate(O.dx, O.dy);
+
+  const x0 = X(b.t), wpx = b.w * W;
+  const baseY = Y(b.base);
+  const topY  = Y(b.base + b.h);
+  const hpx   = baseY - topY;
+  const wet   = b.base < ph.level;
+  const depth = Math.min(1, Math.max(0, (ph.level - b.base) / Math.max(0.6, b.h)));
+
+  // 侧面
+  ctx.beginPath();
+  ctx.moveTo(x0+wpx, topY); ctx.lineTo(x0+wpx+OX, topY+OY);
+  ctx.lineTo(x0+wpx+OX, baseY+OY); ctx.lineTo(x0+wpx, baseY); ctx.closePath();
+  ctx.fillStyle = wet ? "#1f2f3d" : "#39424e"; ctx.fill();
+
+  // 正面
+  const g = ctx.createLinearGradient(0, topY, 0, baseY);
+  if (wet){ g.addColorStop(0, "#44576a"); g.addColorStop(1, "#1c2937"); }
+  else    { g.addColorStop(0, "#dde5ec"); g.addColorStop(1, "#a2aeb9"); }
+  ctx.fillStyle = g; ctx.fillRect(x0, topY, wpx, hpx);
+
+  // 顶面
+  ctx.beginPath();
+  ctx.moveTo(x0, topY); ctx.lineTo(x0+OX, topY+OY);
+  ctx.lineTo(x0+wpx+OX, topY+OY); ctx.lineTo(x0+wpx, topY); ctx.closePath();
+  ctx.fillStyle = wet ? "#4e6272" : "#f2f7fb"; ctx.fill();
+
+  // 窗户
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x0, topY, wpx, hpx); ctx.clip();
+  const cols = Math.max(2, Math.round(wpx / 13));
+  const rows = Math.max(2, Math.round(hpx / 17));
+  for (let r=0;r<rows;r++){
+    for (let c=0;c<cols;c++){
+      const cw = (wpx-8)/cols, ch = (hpx-10)/rows;
+      const wx = x0 + 4 + c*cw, wy = topY + 5 + r*ch;
+      const under = wet && (wy + ch*0.6) > fY;
+      const lit = ((b.seed + r*7 + c*13) % 5) !== 0;
+      ctx.fillStyle = under ? "rgba(110,195,235,.28)"
+                            : (lit ? "rgba(255,224,132,.92)" : "rgba(112,132,152,.60)");
+      ctx.fillRect(wx, wy, Math.max(2.5, cw-4), Math.max(2.5, ch-5));
+    }
+  }
+  ctx.restore();
+
+  // 淹没线
+  if (wet){
+    ctx.save();
+    ctx.strokeStyle = "rgba(130,240,255,"+(0.50 + 0.35*Math.sin(time*4 + b.t*22))+")";
+    ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(x0-3, fY); ctx.lineTo(x0+wpx+3, fY); ctx.stroke();
+    ctx.restore();
+  }
+  // 受灾警示标
+  if (wet && depth > 0.20 && !b.bg){
+    ctx.save();
+    const pulse = 0.45 + 0.45*Math.sin(time*3.4 + b.t*20);
+    ctx.fillStyle = "rgba(255,77,94,"+(0.25 + 0.35*pulse)+")";
+    ctx.beginPath(); ctx.arc(x0+wpx/2, topY+OY-11, 6.5, 0, 7); ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,.95)";
+    ctx.font = "700 10px " + FONT; ctx.textAlign = "center";
+    ctx.fillText("!", x0+wpx/2, topY+OY-7.5);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+/* ---------- 陆上洪水覆盖 ---------- */
+function drawFlood(P, S, ph, wind){
+  const N = 70;
+  if (ph.level <= 0.02) return;
+  // 海堤未越顶时，海水只抵堤前；一旦越顶才向堤后内陆蔓延
+  const tE = ph.over > 0 ? 1 : (S.plateauT - 0.032);
+
+  // 洪水区域：上边界为 min(水面, 地面)
+  ctx.beginPath();
+  let started = false;
+  for (let i=0;i<=N;i++){
+    const t = S.shoreT + (tE-S.shoreT)*i/N;
+    const lY = Y(landHeightSafe(S,t));
+    const wY = Y(surfaceHeight(ph, t)) + waveOffset(t, time, 2.2 + wind*0.9);
+    const y  = Math.min(lY, wY);
+    if (!started){ ctx.moveTo(X(t), y); started = true; } else ctx.lineTo(X(t), y);
+  }
+  for (let i=N;i>=0;i--){
+    const t = S.shoreT + (tE-S.shoreT)*i/N;
+    ctx.lineTo(X(t), Y(landHeightSafe(S,t)));
+  }
+  ctx.closePath();
+
+  const g = ctx.createLinearGradient(0, Y(ph.level+0.8), 0, Y(0));
+  g.addColorStop(0, "rgba(120,225,255,.38)");
+  g.addColorStop(1, "rgba(40,120,175,.62)");
+  ctx.fillStyle = g; ctx.fill();
+
+  // 洪水锋面泡沫线
+  ctx.beginPath();
+  for (let i=0;i<=N;i++){
+    const t = S.shoreT + (tE-S.shoreT)*i/N;
+    const lY = Y(landHeightSafe(S,t));
+    const wY = Y(surfaceHeight(ph, t)) + waveOffset(t, time, 2.2 + wind*0.9);
+    const y  = Math.min(lY, wY);
+    if (i===0) ctx.moveTo(X(t), y); else ctx.lineTo(X(t), y);
+  }
+  ctx.strokeStyle = "rgba(220,250,255,"+(0.35 + wind*0.03)+")";
+  ctx.lineWidth = 2; ctx.stroke();
+}
+
+/* ---------- 波浪与浪花 ---------- */
+function drawWaves(P, ph, S, wind){
+  const N = 90;
+  // 白浪冠
+  if (wind >= 4){
+    ctx.save();
+    for (let i=0;i<26;i++){
+      const t = S.shoreT * (0.06 + 0.90*((i*0.137+ (time*0.06*(1+wind*0.12))) % 1));
+      const amp = (2.0 + wind*2.2) * (0.35 + 0.65*Math.min(1, t/S.shoreT));
+      const y = Y(surfaceHeight(ph, t)) + waveOffset(t, time, amp);
+      const a = (0.05 + wind*0.035) * (0.5 + 0.5*Math.sin(time*3 + i*1.7));
+      ctx.fillStyle = "rgba(240,252,255,"+a+")";
+      ctx.beginPath();
+      ctx.ellipse(X(t), y-2, W*0.012, 2.4 + wind*0.22, 0, 0, 7);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+  // 岸边破波
+  const breakT = S.shoreT * 0.82;
+  const ba = 0.10 + wind*0.045;
+  if (wind >= 3){
+    ctx.save();
+    ctx.fillStyle = "rgba(235,250,255,"+(ba*(0.6+0.4*Math.sin(time*5)))+")";
+    ctx.beginPath();
+    ctx.ellipse(X(breakT), Y(surfaceHeight(ph, breakT)), W*0.05, 5 + wind*0.5, 0, 0, 7);
+    ctx.fill();
+    ctx.restore();
+  }
+  // 涌浪（浅水变形）—— 向岸的平行浪脊
+  if (wind >= 5){
+    ctx.save();
+    for (let i=0;i<4;i++){
+      const t = S.shoreT * (0.58 + i*0.11);
+      const ph2 = (time*1.4 + i*0.5) % 1;
+      const a = 0.22*(1-ph2)*(wind/12);
+      ctx.strokeStyle = "rgba(230,250,255,"+a+")";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      for (let k=0;k<=14;k++){
+        const tt = t + (k/14 - 0.5)*0.05;
+        const y = Y(surfaceHeight(ph, tt)) + Math.sin(k*0.9 - time*4)*2;
+        if (k===0) ctx.moveTo(X(tt), y); else ctx.lineTo(X(tt), y);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
+/* ---------- 雨与浪花粒子 ---------- */
+function drawParticles(P, wind, ph, S){
+  /* 雨 */
+  const want = Math.max(0, Math.round((wind - 6) * 42));
+  while (rain.length < want) rain.push({x: Math.random()*W*1.3 - W*0.15, y: Math.random()*MSL_Y,
+    len: 9 + Math.random()*16, v: 0.6 + Math.random()*0.6});
+  while (rain.length > want) rain.pop();
+  if (rain.length){
+    ctx.save();
+    ctx.strokeStyle = "rgba(190,225,250,.32)"; ctx.lineWidth = 1.1;
+    for (const r of rain){
+      r.x += (wind*4.5 + 6) * r.v * 0.55;
+      r.y += (wind*5.5 + 8) * r.v * 0.55;
+      if (r.y > MSL_Y + 20){ r.y = -20; r.x = Math.random()*W*1.3 - W*0.15; }
+      if (r.x > W+40) r.x = -40;
+      ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - r.len*0.35, r.y - r.len); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* 越浪浪花 */
+  const wallX = X(S.plateauT + 0.014);
+  const wallTopY = Y(S.ground + S.wallH);
+  const spawnY = Math.min(wallTopY, Y(ph.level));   // 水位淹没堤顶时，浪花从水面起
+  const spawn = ph.over > -0.6 && wind >= 6;
+  if (spawn){
+    const n = Math.round((wind-5) * (ph.over > 0 ? 3.4 : 1.2));
+    for (let i=0;i<n;i++){
+      if (spray.length > 220) break;
+      spray.push({
+        x: wallX - 6 + Math.random()*14,
+        y: spawnY + Math.random()*10,
+        vx: 18 + wind*7 + Math.random()*30,
+        vy: -60 - Math.random()*70 - wind*2.2,
+        r: 1.4 + Math.random()*2.6, life: 1
+      });
+    }
+  }
+  for (let i=spray.length-1;i>=0;i--){
+    const p = spray[i];
+    p.x += p.vx*0.016; p.y += p.vy*0.016; p.vy += 260*0.016; p.life -= 0.016*0.85;
+    if (p.life <= 0 || p.y > MSL_Y + 40){ spray.splice(i,1); continue; }
+    ctx.fillStyle = "rgba(235,250,255,"+(p.life*0.62)+")";
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill();
+  }
+}
+
+/* ---------- 水位标尺（置于左侧开阔水面） ---------- */
+function drawGauge(P, S, ph){
+  const top = Y(9.2), bot = Y(-3.6);
+  const px = 12, pw = 112, axisX = px + 16;
+
+  ctx.save();
+  ctx.fillStyle = "rgba(6,17,27,.58)";
+  roundRect(px, top-24, pw, bot-top+38, 12); ctx.fill();
+  ctx.strokeStyle = "rgba(120,215,255,.20)"; ctx.lineWidth = 1;
+  roundRect(px, top-24, pw, bot-top+38, 12); ctx.stroke();
+
+  ctx.fillStyle = "rgba(175,218,242,.9)";
+  ctx.font = "600 10px " + FONT; ctx.textAlign = "left";
+  ctx.fillText("水位 / m", px+11, top-10);
+
+  // 竖轴
+  ctx.strokeStyle = "rgba(150,215,245,.30)"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(axisX, top); ctx.lineTo(axisX, bot); ctx.stroke();
+
+  // 刻度
+  for (let m=-3; m<=10; m++){
+    const y = Y(m);
+    if (y < top-2 || y > bot+2) continue;
+    const major = (m % 2 === 0);
+    ctx.strokeStyle = major ? "rgba(150,215,245,.50)" : "rgba(150,215,245,.20)";
+    ctx.lineWidth = major ? 1.3 : 1;
+    ctx.beginPath(); ctx.moveTo(axisX, y); ctx.lineTo(axisX + (major?8:4), y); ctx.stroke();
+    if (major){
+      ctx.fillStyle = "rgba(170,215,240,.70)";
+      ctx.font = "500 9.5px " + FONT; ctx.textAlign = "left";
+      ctx.fillText((m>0?"+":"") + m, axisX + 12, y + 3.3);
+    }
+  }
+
+  // 参考高程线
+  const refs = [
+    { m: 0.0,                c: "#7fb8dd", t: "平均海平面" },
+    { m: S.ground,           c: "#6ed29a", t: "城市地面"   },
+    { m: S.ground + S.wallH, c: "#c8d6e4", t: "海堤顶"     }
+  ];
+  for (const r of refs){
+    const y = Y(r.m);
+    if (y < top-6 || y > bot+6) continue;
+    ctx.save();
+    ctx.globalAlpha = 0.70;
+    ctx.setLineDash([4,4]); ctx.strokeStyle = r.c; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(axisX, y); ctx.lineTo(px+pw-5, y); ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = r.c; ctx.font = "600 9px " + FONT; ctx.textAlign = "right";
+    ctx.fillText(r.t, px+pw-5, y - 4.5);
+    ctx.restore();
+  }
+
+  // 当前水位
+  const y = Y(ph.level);
+  const danger = ph.over > 0;
+  const col = danger ? "#ff4d5e" : "#3ad6ff";
+  ctx.save();
+  ctx.strokeStyle = col; ctx.lineWidth = 2.4;
+  ctx.beginPath(); ctx.moveTo(axisX-1, y); ctx.lineTo(px+pw-5, y); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(axisX+2, y); ctx.lineTo(axisX-10, y-6); ctx.lineTo(axisX-10, y+6); ctx.closePath();
+  ctx.fillStyle = col; ctx.fill();
+  ctx.font = "700 12.5px " + FONT; ctx.textAlign = "left";
+  const lvTxt = (ph.level>=0?"+":"") + ph.level.toFixed(1);
+  const lvW = ctx.measureText(lvTxt).width + 8;
+  ctx.fillStyle = "rgba(6,17,27,.86)";                      // 遮住其后的刻度文字，避免叠字
+  roundRect(axisX + 9, y - 19, lvW, 15, 4); ctx.fill();
+  ctx.fillStyle = danger ? "#ffdfe3" : "#d8f6ff";
+  ctx.fillText(lvTxt, axisX + 13, y - 8);
+  ctx.restore();
+  ctx.restore();
+}
+
+/* ---------- 场景内文字标注 ---------- */
+function pill(cx, cy, text, color){
+  ctx.font = "600 11px " + FONT;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  const w = ctx.measureText(text).width + 20;
+  ctx.save();
+  ctx.fillStyle = "rgba(5,14,23,.68)";
+  roundRect(cx-w/2, cy-11, w, 22, 11); ctx.fill();
+  ctx.globalAlpha = 0.40; ctx.strokeStyle = color; ctx.lineWidth = 1.1;
+  roundRect(cx-w/2, cy-11, w, 22, 11); ctx.stroke();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = color; ctx.fillText(text, cx, cy+0.5);
+  ctx.restore();
+}
+function headAt(x, y, dir){                 // dir: -1 朝上, 1 朝下
+  ctx.beginPath();
+  ctx.moveTo(x, y); ctx.lineTo(x-5, y+dir*8); ctx.lineTo(x+5, y+dir*8);
+  ctx.closePath(); ctx.fill();
+}
+function drawLabels(P, S, ph){
+  const wind = view.wind;
+  const wi   = Math.max(0, Math.min(12, Math.round(wind)));
+
+  // ① 向岸风箭头
+  for (let i=0;i<3;i++){
+    const ax  = W*0.042 + i*W*0.056;
+    const ay  = Y(6.6 + i*1.5);
+    const len = W*0.020 + wind*W*0.0050;
+    ctx.save();
+    ctx.globalAlpha = 0.20 + wind*0.045;
+    ctx.strokeStyle = "#9fe4ff"; ctx.fillStyle = "#9fe4ff";
+    ctx.lineWidth = 1.8; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax+len, ay); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(ax+len, ay); ctx.lineTo(ax+len-8, ay-4.5); ctx.lineTo(ax+len-8, ay+4.5);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+  pill(W*0.5, 24, "向岸风 " + windTag(wi), "#9fe4ff");
+
+  // ② 风暴增水尺寸线（岸线处）
+  const dx  = X(S.shoreT) + 12;
+  const yTo = Y(ph.level);
+  const yBo = Y(ph.tide + ph.surgePres);
+  if (yBo - yTo > 9){
+    ctx.save();
+    ctx.globalAlpha = 0.92;
+    ctx.strokeStyle = "#ffd23f"; ctx.fillStyle = "#ffd23f";
+    ctx.lineWidth = 1.8;
+    ctx.beginPath(); ctx.moveTo(dx, yTo); ctx.lineTo(dx, yBo); ctx.stroke();
+    headAt(dx, yTo, -1); headAt(dx, yBo, 1);
+    ctx.restore();
+  }
+  const stTxt = "风暴增水 +" + ph.surge.toFixed(1) + " m";
+  ctx.font = "600 11px " + FONT;
+  const stW  = ctx.measureText(stTxt).width + 20;
+  const stCx = Math.min(W - stW/2 - 6, dx + 8 + stW/2);
+  pill(stCx, Math.min(yTo, yBo) - 22, stTxt, ph.surge > 0.6 ? "#ffd23f" : "#8fa9bf");
+
+  // ③ 海堤标注
+  const wx = X(S.plateauT + 0.014), wy = Y(S.ground + S.wallH);
+  const wallTxt = "海堤顶 +" + (S.ground + S.wallH).toFixed(1) + " m";
+  ctx.font = "600 11px " + FONT;
+  const wallW = ctx.measureText(wallTxt).width + 20;
+  const wpX = Math.max(wallW/2 + 8, wx - 104);
+  const wpY = Math.max(30, wy - 102);
+  ctx.save();
+  ctx.globalAlpha = 0.55;
+  ctx.strokeStyle = "#cbd8e6"; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(wx-2, wy-6); ctx.lineTo(wpX, wpY+13); ctx.stroke();
+  ctx.restore();
+  pill(wpX, wpY, wallTxt, "#cbd8e6");
+}
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+/* ============================================================================
+   UI 联动
+   ========================================================================== */
+const $ = id => document.getElementById(id);
+const els = {
+  windNum:$("windNum"), windSpeed:$("windSpeed"), windName:$("windName"), windRange:$("windRange"),
+  tideNum:$("tideNum"), tideRange:$("tideRange"), tideName:$("tideName"),
+  slopeRange:$("slopeRange"), slopeName:$("slopeName"),
+  slopeDepth:$("slopeDepth"), slopeFetch:$("slopeFetch"),
+  riskBox:$("riskBox"), riskName:$("riskName"), riskTxt:$("riskTxt"),
+  bldNum:$("bldNum"),
+  sWind:$("sWind"), sPres:$("sPres"), sTotal:$("sTotal"), sLevel:$("sLevel"),
+  sFlood:$("sFlood"), sOver:$("sOver"),
+  barWind:$("barWind"), barPres:$("barPres"), barSurge:$("barSurge"), barLevel:$("barLevel"),
+  floodStat:$("floodStat"), warnFlash:$("warnFlash")
+};
+
+function tideName(v){
+  if (v >= 2.0) return "天文大潮（高潮）";
+  if (v >= 1.0) return "高潮位";
+  if (v >= 0.2) return "平常潮位";
+  if (v >= -0.6) return "低潮位";
+  return "天文低潮";
+}
+function setSliderFill(el){
+  const p = (el.value - el.min) / (el.max - el.min) * 100;
+  el.style.setProperty("--p", p + "%");
+}
+
+let lastRisk = -1;
+function updatePanel(ph, windV){
+  const risk = evaluate(ph);
+  const R_MAX = 8, F_MAX = 8;
+
+  $("sWind").textContent  = ph.surgeWind.toFixed(1);
+  $("sPres").textContent  = ph.surgePres.toFixed(1);
+  $("sTotal").textContent = ph.surge.toFixed(1);
+  $("sLevel").textContent = (ph.level>=0?"+":"") + ph.level.toFixed(1);
+  $("sFlood").textContent = ph.flood.toFixed(1);
+  $("sOver").textContent  = ph.over > 0 ? ph.over.toFixed(1) : "0.0";
+
+  $("barWind").style.width  = Math.min(100, ph.surgeWind/R_MAX*100) + "%";
+  $("barPres").style.width  = Math.min(100, ph.surgePres/R_MAX*100) + "%";
+  $("barSurge").style.width = Math.min(100, ph.surge/R_MAX*100) + "%";
+  $("barLevel").style.width = Math.min(100, Math.max(0,(ph.level+2)/10*100)) + "%";
+
+  $("bldNum").textContent = risk.flooded;
+  $("bldTotal").textContent = risk.total;
+
+  const floodStat = els.floodStat;
+  floodStat.classList.toggle("bad", ph.flood > 1.5);
+  floodStat.classList.toggle("warn", ph.flood > 0 && ph.flood <= 1.5);
+
+  els.riskBox.style.setProperty("--rc", risk.color);
+  if (risk.lvl !== lastRisk){
+    els.riskName.textContent = risk.name;
+    els.riskName.style.color = risk.color;
+    lastRisk = risk.lvl;
+  }
+  els.riskTxt.textContent = risk.txt;
+
+  // 危险时画面边缘红光
+  els.warnFlash.style.opacity = risk.lvl >= 4 ? (0.35 + 0.35*Math.abs(Math.sin(time*2))) : "0";
+
+  // 建筑受灾统计用（在 evaluate 里已用最新 city）
+}
+
+/* ---------- 输入事件 ---------- */
+els.windRange.addEventListener("input", e => {
+  state.wind = +e.target.value; setSliderFill(e.target);
+  els.windNum.textContent = state.wind;
+  els.windSpeed.textContent = Math.round(BEAUFORT[state.wind]);
+  els.windName.textContent = tcCat(state.wind) || "普通风力";
+});
+els.tideRange.addEventListener("input", e => {
+  state.tide = +e.target.value; setSliderFill(e.target);
+  els.tideNum.textContent = (state.tide>=0?"+":"") + state.tide.toFixed(1);
+  els.tideName.textContent = tideName(state.tide);
+});
+els.slopeRange.addEventListener("input", e => {
+  state.slope = +e.target.value; setSliderFill(e.target);
+  const S = shoreProfile(state.slope);
+  els.slopeName.textContent = S.name;
+  els.slopeDepth.textContent = Math.round(S.depth / 5) * 5;
+  els.slopeFetch.textContent = Math.round(S.fetch / 5000) * 5;
+  city = buildCity(state.slope);
+});
+
+function syncUI(){
+  els.windRange.value = state.wind; setSliderFill(els.windRange);
+  els.windNum.textContent = state.wind;
+  els.windSpeed.textContent = Math.round(BEAUFORT[state.wind]);
+  els.windName.textContent = tcCat(state.wind) || "普通风力";
+
+  els.tideRange.value = state.tide; setSliderFill(els.tideRange);
+  els.tideNum.textContent = (state.tide>=0?"+":"") + state.tide.toFixed(1);
+  els.tideName.textContent = tideName(state.tide);
+
+  els.slopeRange.value = state.slope; setSliderFill(els.slopeRange);
+  const S = shoreProfile(state.slope);
+  els.slopeName.textContent = S.name;
+  els.slopeDepth.textContent = Math.round(S.depth / 5) * 5;
+  els.slopeFetch.textContent = Math.round(S.fetch / 5000) * 5;
+  city = buildCity(state.slope);
+}
+
+/* ---------- 初始化 ---------- */
+function init(){
+  // URL 参数可直接设定情景，便于课堂预设链接：?wind=12&tide=2.5&slope=1
+  try{
+    const q = new URLSearchParams(location.search);
+    if (q.has("wind"))  state.wind  = Math.min(12, Math.max(0, Math.round(+q.get("wind"))));
+    if (q.has("tide"))  state.tide  = Math.min(3, Math.max(-2, Math.round(+q.get("tide") * 2) / 2));
+    if (q.has("slope")) state.slope = Math.min(1, Math.max(0, +q.get("slope")));
+  }catch(e){}
+
+  resize();
+  seedClouds();
+  city = buildCity(state.slope);
+  syncUI();
+  view.wind = state.wind; view.tide = state.tide;
+  const p0 = physics(state.wind, state.tide, state.slope);
+  view.surge = p0.surge; view.level = p0.level;
+  requestAnimationFrame(frame);
+  window.addEventListener("resize", () => { resize(); seedClouds(); });
+}
+init();
+</script>
+</body>
+</html>
