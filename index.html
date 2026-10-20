@@ -8,21 +8,22 @@
 /* ========================= 基础 ========================= */
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg0:#050b12; --bg1:#0a1622; --bg2:#0e1f2e;
-  --panel:rgba(255,255,255,.045);
-  --panel-b:rgba(120,215,255,.14);
-  --txt:#e8f4ff; --txt2:#8fa9bf; --txt3:#5d7a92;
-  --cy:#3ad6ff; --cy2:#6ee7ff; --teal:#43e0b8;
-  --grn:#3ddc84; --yel:#ffd23f; --org:#ff9a3c; --red:#ff4d5e; --dred:#c9122c;
+  --bg0:#eff6fb; --bg1:#e7f1f9; --bg2:#f8fcff;
+  --panel:#ffffff;
+  --panel-b:#dbe8f3;
+  --txt:#12303f; --txt2:#5b7a8e; --txt3:#93a9b8;
+  --cy:#0a6f96; --cy2:#0d8fc0; --teal:#0fa98d;
+  --grn:#12a05a; --yel:#c98a0a; --org:#d9711f; --red:#dc2f42; --dred:#a80d24;
+  --rc:#12a05a; --rcDeep:#0f8f52;
   --font:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",system-ui,sans-serif;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg0);font-family:var(--font);color:var(--txt);
   -webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;
   background:
-    radial-gradient(1200px 700px at 78% 12%,rgba(58,214,255,.10),transparent 60%),
-    radial-gradient(900px 600px at 12% 88%,rgba(67,224,184,.07),transparent 60%),
-    linear-gradient(160deg,#050b12,#091624 55%,#050b12);}
+    radial-gradient(1200px 700px at 78% 12%,rgba(17,153,207,.12),transparent 60%),
+    radial-gradient(900px 600px at 12% 88%,rgba(15,169,141,.10),transparent 60%),
+    linear-gradient(160deg,#f7fbff,#eaf4fb 55%,#f5fafe);}
 #app{position:relative;display:flex;flex-direction:column;height:100vh;height:100dvh;
   width:100vw;max-width:560px;margin:0 auto;gap:9px;padding:9px;z-index:1}
 
@@ -31,57 +32,56 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;
   flex:1 1 auto;min-height:0;width:auto;display:flex;flex-direction:column;gap:10px;
   overflow-y:auto;overflow-x:hidden;padding-right:2px;-webkit-overflow-scrolling:touch;
   scroll-behavior:smooth;overscroll-behavior:contain;
-  scrollbar-width:thin;scrollbar-color:rgba(120,215,255,.25) transparent;
+  scrollbar-width:thin;scrollbar-color:rgba(13,143,192,.30) transparent;
 }
 #panel::-webkit-scrollbar{width:6px}
-#panel::-webkit-scrollbar-thumb{background:rgba(120,215,255,.22);border-radius:3px}
+#panel::-webkit-scrollbar-thumb{background:rgba(13,143,192,.26);border-radius:3px}
 .card{
   background:var(--panel);border:1px solid var(--panel-b);border-radius:16px;padding:14px 15px;
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  box-shadow:0 8px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05);
+  box-shadow:0 4px 16px rgba(23,73,105,.08),0 1px 0 rgba(255,255,255,.9) inset;
 }
 .brand{flex:0 0 auto;display:flex;align-items:center;gap:11px;padding:1px 2px 0}
 .brand .logo{width:38px;height:38px;flex:0 0 38px;border-radius:11px;
-  background:linear-gradient(145deg,#0f4f6b,#0b2f45);
-  border:1px solid rgba(106,229,255,.35);display:grid;place-items:center;
-  box-shadow:0 0 22px rgba(58,214,255,.22)}
+  background:linear-gradient(145deg,#eaf7fe,#cfeafa);
+  border:1px solid rgba(13,143,192,.28);display:grid;place-items:center;
+  box-shadow:0 4px 14px rgba(13,143,192,.18)}
 .brand h1{font-size:19px;font-weight:700;letter-spacing:.5px;line-height:1.2;
-  background:linear-gradient(90deg,#bff0ff,#4fd9ff 60%,#43e0b8);
+  background:linear-gradient(90deg,#0a6d94,#0f9fd4 60%,#0fae8f);
   -webkit-background-clip:text;background-clip:text;color:transparent}
 .brand p{font-size:11px;color:var(--txt2);margin-top:3px;letter-spacing:.4px}
 
 .sec-title{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;
-  letter-spacing:1.6px;color:var(--cy2);text-transform:uppercase;margin-bottom:12px;opacity:.95}
-.sec-title i{width:3px;height:13px;border-radius:2px;background:linear-gradient(180deg,var(--cy),var(--teal));
-  display:block;box-shadow:0 0 8px rgba(58,214,255,.6)}
+  letter-spacing:1.6px;color:#0b7799;text-transform:uppercase;margin-bottom:12px;opacity:.95}
+.sec-title i{width:3px;height:13px;border-radius:2px;background:linear-gradient(180deg,var(--cy2),var(--teal));
+  display:block;box-shadow:0 0 8px rgba(13,143,192,.35)}
 .sec-title span{color:var(--txt3);font-size:10px;letter-spacing:.5px;font-weight:400;margin-left:auto;text-transform:none}
 
 /* ---- 滑块 ---- */
 .ctrl{margin-bottom:16px}
 .ctrl:last-child{margin-bottom:0}
 .ctrl-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:9px}
-.ctrl-name{font-size:13px;font-weight:600;color:#dcf0ff}
+.ctrl-name{font-size:13px;font-weight:600;color:#1c4154}
 .ctrl-name em{font-style:normal;font-size:10px;color:var(--txt2);margin-left:6px;letter-spacing:.3px}
 .ctrl-val{font-variant-numeric:tabular-nums;font-size:21px;font-weight:700;line-height:1;
-  color:var(--cy2);text-shadow:0 0 14px rgba(58,214,255,.45)}
+  color:var(--cy2)}
 .ctrl-val u{text-decoration:none;font-size:11px;font-weight:500;color:var(--txt2);margin-left:2px}
 .ctrl-sub{font-size:10.5px;color:var(--txt2);margin-top:7px;display:flex;justify-content:space-between;
   letter-spacing:.2px}
-.ctrl-sub b{color:#a9e9ff;font-weight:600}
+.ctrl-sub b{color:#0b6f96;font-weight:600}
 
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;cursor:pointer;display:block}
 input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;
-  background:linear-gradient(90deg,rgba(58,214,255,.75) var(--p,50%),rgba(255,255,255,.10) var(--p,50%));
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+  background:linear-gradient(90deg,#17b3e0 var(--p,50%),rgba(19,60,90,.13) var(--p,50%));
+  box-shadow:inset 0 0 0 1px rgba(19,60,90,.06)}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;
-  margin-top:-6px;background:radial-gradient(circle at 35% 30%,#ffffff,#7fe3ff 45%,#16a6d6);
-  border:1px solid rgba(255,255,255,.85);box-shadow:0 0 0 4px rgba(58,214,255,.16),0 3px 10px rgba(0,0,0,.5);
+  margin-top:-6px;background:radial-gradient(circle at 35% 30%,#ffffff,#8fdaf5 45%,#0d8fc0);
+  border:1px solid #ffffff;box-shadow:0 0 0 4px rgba(13,143,192,.16),0 2px 6px rgba(23,73,105,.30);
   transition:box-shadow .15s}
-input[type=range]:active::-webkit-slider-thumb{box-shadow:0 0 0 7px rgba(58,214,255,.24),0 3px 12px rgba(0,0,0,.5)}
-input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:rgba(255,255,255,.10)}
-input[type=range]::-moz-range-progress{height:6px;border-radius:6px;background:rgba(58,214,255,.75)}
+input[type=range]:active::-webkit-slider-thumb{box-shadow:0 0 0 7px rgba(13,143,192,.22),0 2px 8px rgba(23,73,105,.34)}
+input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:rgba(19,60,90,.13)}
+input[type=range]::-moz-range-progress{height:6px;border-radius:6px;background:#17b3e0}
 input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#ffffff,#7fe3ff 45%,#16a6d6)}
+  background:radial-gradient(circle at 35% 30%,#ffffff,#8fdaf5 45%,#0d8fc0)}
 
 /* ---- 海岸缓陡轴（两端标注） ---- */
 .slope-ends{display:flex;justify-content:space-between;margin-top:6px;
@@ -89,48 +89,48 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 
 /* ---- 结果读数 ---- */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.stat{background:rgba(255,255,255,.032);border:1px solid rgba(255,255,255,.075);border-radius:11px;
+.stat{background:#f7fbfe;border:1px solid #e3edf6;border-radius:11px;
   padding:9px 10px 8px;position:relative;overflow:hidden}
 .stat small{display:block;font-size:10px;color:var(--txt2);letter-spacing:.3px;margin-bottom:4px}
 .stat .num{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;
-  color:#dff6ff;letter-spacing:-.3px}
+  color:#14344a;letter-spacing:-.3px}
 .stat .num u{text-decoration:none;font-size:11px;font-weight:500;color:var(--txt2);margin-left:2px}
 .stat.hi .num{color:var(--cy2)}
-.stat.warn .num{color:var(--yel)}
-.stat.bad .num{color:var(--red)}
-.mini-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.09);margin-top:7px;overflow:hidden}
+.stat.warn .num{color:#b57a06}
+.stat.bad .num{color:#cf2438}
+.mini-bar{height:3px;border-radius:2px;background:rgba(19,60,90,.10);margin-top:7px;overflow:hidden}
 .mini-bar i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cy),var(--teal));
   transition:width .35s cubic-bezier(.2,.8,.3,1),background .35s}
 
 /* 灾害等级条 */
-#riskBox{border-radius:13px;padding:12px 14px;border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.03);transition:.4s;position:relative;overflow:hidden}
-#riskBox::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--rc,var(--grn));
-  transition:.4s;box-shadow:0 0 16px var(--rc,var(--grn))}
+#riskBox{border-radius:13px;padding:12px 14px;border:1px solid #e3edf6;
+  background:#f8fcff;transition:.4s;position:relative;overflow:hidden}
+#riskBox::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--rc,#12a05a);
+  transition:.4s}
 .risk-row{display:flex;align-items:center;gap:9px}
-.risk-dot{width:9px;height:9px;border-radius:50%;background:var(--rc,var(--grn));flex:0 0 9px;
-  box-shadow:0 0 12px var(--rc,var(--grn));animation:blink 1.6s infinite}
+.risk-dot{width:9px;height:9px;border-radius:50%;background:var(--rc,#12a05a);flex:0 0 9px;
+  box-shadow:0 0 8px var(--rc,#12a05a);animation:blink 1.6s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
-.risk-name{font-size:15px;font-weight:700;color:var(--rc,var(--grn));letter-spacing:.6px;transition:.4s}
+.risk-name{font-size:15px;font-weight:700;color:var(--rcDeep,#0f8f52);letter-spacing:.6px;transition:.4s}
 .risk-txt{font-size:11px;color:var(--txt2);line-height:1.55;margin-top:8px;padding-left:18px;letter-spacing:.2px}
 
 /* ========================= 舞台 ========================= */
 #stage{flex:0 0 auto;height:42vh;height:42dvh;position:relative;border-radius:16px;overflow:hidden;min-width:0;
-  border:1px solid rgba(120,215,255,.13);box-shadow:0 12px 40px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.03)}
+  border:1px solid #d7e5f0;box-shadow:0 8px 24px rgba(23,73,105,.16)}
 canvas{display:block;width:100%;height:100%}
 #warnFlash{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .5s;
   box-shadow:inset 0 0 130px 30px rgba(255,60,80,.55)}
 
 /* ========================= 操作按钮 ========================= */
 .actBtn{display:block;width:100%;margin-top:14px;padding:12px 14px;border:none;border-radius:13px;
-  font-family:var(--font);font-size:14.5px;font-weight:700;letter-spacing:2.5px;color:#04121c;
-  background:linear-gradient(100deg,#5fe3ff,#43e0b8);cursor:pointer;
-  box-shadow:0 8px 22px rgba(58,214,255,.28);
+  font-family:var(--font);font-size:14.5px;font-weight:700;letter-spacing:2.5px;color:#06303f;
+  background:linear-gradient(100deg,#63e7ff,#4ce4bd);cursor:pointer;
+  box-shadow:0 6px 18px rgba(19,150,200,.26);
   transition:transform .15s,box-shadow .15s,filter .15s;-webkit-tap-highlight-color:transparent}
-.actBtn:active{transform:translateY(1px) scale(.99);box-shadow:0 4px 14px rgba(58,214,255,.24);filter:brightness(1.06)}
-.actBtn.ghost{color:#bfeaff;background:transparent;border:1px solid rgba(120,215,255,.42);
+.actBtn:active{transform:translateY(1px) scale(.99);box-shadow:0 4px 12px rgba(19,150,200,.22);filter:brightness(1.04)}
+.actBtn.ghost{color:#0b7fa8;background:#ffffff;border:1px solid rgba(13,143,192,.40);
   box-shadow:none;font-size:13.5px;letter-spacing:1.8px}
-.actBtn.ghost:active{background:rgba(120,215,255,.10);filter:none}
+.actBtn.ghost:active{background:rgba(13,143,192,.08);filter:none}
 
 </style>
 </head>
@@ -141,9 +141,9 @@ canvas{display:block;width:100%;height:100%}
   <header class="brand">
     <div class="logo">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <path d="M2 15c2.2-1.6 4.4-1.6 6.6 0s4.4 1.6 6.6 0 4.4-1.6 6.6 0" stroke="#6ee7ff" stroke-width="1.9" stroke-linecap="round"/>
-        <path d="M2 19c2.2-1.6 4.4-1.6 6.6 0s4.4 1.6 6.6 0 4.4-1.6 6.6 0" stroke="#43e0b8" stroke-width="1.5" stroke-linecap="round" opacity=".75"/>
-        <path d="M15 10V3.5M15 3.5l-5.5 6.2H20.5L15 3.5z" stroke="#ffd23f" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M2 15c2.2-1.6 4.4-1.6 6.6 0s4.4 1.6 6.6 0 4.4-1.6 6.6 0" stroke="#0d8fc0" stroke-width="1.9" stroke-linecap="round"/>
+        <path d="M2 19c2.2-1.6 4.4-1.6 6.6 0s4.4 1.6 6.6 0 4.4-1.6 6.6 0" stroke="#0fa98d" stroke-width="1.5" stroke-linecap="round" opacity=".75"/>
+        <path d="M15 10V3.5M15 3.5l-5.5 6.2H20.5L15 3.5z" stroke="#e0a415" stroke-width="1.6" stroke-linejoin="round"/>
       </svg>
     </div>
     <div>
@@ -216,7 +216,7 @@ canvas{display:block;width:100%;height:100%}
           <div class="risk-name" id="riskName">安全</div>
           <div style="margin-left:auto;text-align:right;line-height:1.05">
             <div style="font-size:10px;color:var(--txt2);letter-spacing:.3px">城市受灾等级</div>
-            <div style="font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--rc,var(--grn));margin-top:2px">
+            <div style="font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--rcDeep,#0f8f52);margin-top:2px">
               <span id="bldNum">0</span><span style="font-size:11px;font-weight:500;color:var(--txt2);margin-left:2px">级</span>
             </div>
           </div>
@@ -360,25 +360,25 @@ function physics(wind, tide, slope){
 function evaluate(ph){
   const total  = city.filter(b => !b.bg).length;
   const flooded = ph.over > 0 ? city.filter(b => !b.bg && b.base < ph.level).length : 0;
-  let lvl, name, color, txt;
+  let lvl, name, color, deep, txt;
 
   if (ph.over <= 0){
     const gap = ph.wall - ph.level;
-    if (gap > 1.0){ lvl=0; name="安全"; color="#3ddc84";
+    if (gap > 1.0){ lvl=0; name="安全"; color="#3ddc84"; deep="#0f8f52";
       txt="当前水位低于海堤顶 "+gap.toFixed(1)+" m，海水被海堤挡住，城市未受影响。"; }
-    else { lvl=1; name="水位预警"; color="#ffd23f";
+    else { lvl=1; name="水位预警"; color="#ffd23f"; deep="#a87400";
       txt="水位已接近海堤顶（仅差 "+gap.toFixed(1)+" m），需加强巡查与预报。"; }
   } else if (ph.over <= 1.0){
-    lvl=4; name="越堤洪水"; color="#ff9a3c";
+    lvl=4; name="越堤洪水"; color="#ff9a3c"; deep="#b2560c";
     txt="海水越顶 "+ph.over.toFixed(1)+" m，堤后低地开始进水（淹没水深约 "+ph.flood.toFixed(1)+" m），"+flooded+"/"+total+" 栋建筑受灾。";
   } else if (ph.over <= 3.0){
-    lvl=5; name="严重风暴潮灾"; color="#ff4d5e";
+    lvl=5; name="严重风暴潮灾"; color="#ff4d5e"; deep="#cf2033";
     txt="海水越顶 "+ph.over.toFixed(1)+" m，淹没水深达 "+ph.flood.toFixed(1)+" m，大片城区被淹，"+flooded+"/"+total+" 栋建筑受灾，需紧急疏散。";
   } else {
-    lvl=6; name="灾难性风暴潮"; color="#c9122c";
+    lvl=6; name="灾难性风暴潮"; color="#c9122c"; deep="#96081f";
     txt="海水越顶 "+ph.over.toFixed(1)+" m，淹没水深 "+ph.flood.toFixed(1)+" m，海水深入内陆，"+(flooded===total?"全部":"大部分")+"建筑没入水中，属特大灾害。";
   }
-  return {flooded, total, lvl, name, color, txt};
+  return {flooded, total, lvl, name, color, deep, txt};
 }
 
 /* 城市受灾等级（0—4 级），用于结果卡与画面标签 */
@@ -447,6 +447,21 @@ function waveOffset(t, time, amp){
              + Math.sin(t*11.0 - time*1.15)*0.42
              + Math.sin(t*68.0 - time*5.10)*0.16 );
 }
+/* --- 统一的水面波动振幅：海面与越堤洪水共用，岸线处连续不跳变 --- */
+function surfAmp(wind, S, t){
+  const s = Math.min(1, Math.max(0, t / S.shoreT));
+  return (2.0 + wind*2.2) * (0.35 + 0.65*s) * VSC;
+}
+/* --- 统一的水体填充渐变：海体与洪水共用同一套配色，跨越岸线颜色一致 --- */
+function waterGrad(P, ph){
+  const g = ctx.createLinearGradient(0, Y(ph.level+1)-20, 0, H);
+  g.addColorStop(0,    rgba(P.seaLight, 0.92));
+  g.addColorStop(0.10, rgba(P.seaLight, 0.72));
+  g.addColorStop(0.55, rgba(P.seaDeep,  0.94));
+  g.addColorStop(1,    rgba(P.seaDeep,  1));
+  return g;
+}
+
 /* --- 海底（屏幕比例深度 0~1） --- */
 function seabedDepth(S, s){                          // s: 0=外海 → 1=岸线
   const k = S.bottomK, p = S.bottomP;
@@ -458,20 +473,24 @@ function seabedY(S, t){
   return MSL_Y + d * (H - MSL_Y - 8);
 }
 
-/* --- 调色板（随风力变暗） --- */
+/* --- 天气恶化程度：≤6 级风晴朗，之后逐渐转为暴雨，12 级达到最暗 --- */
+function weatherK(wind){
+  return Math.min(1, Math.max(0, (wind - 6) / 6));
+}
+/* --- 调色板（低风力=晴朗明亮，风力越大越阴暗） --- */
 function palette(wind){
-  const k = wind / 12;                                // 0..1 天气恶化程度
+  const k = weatherK(wind);                           // 0..1 天气恶化程度
   return {
-    skyTop:  mix([16,44,74],  [8,14,26],  k),
-    skyMid:  mix([58,110,152],[22,32,50], k),
-    skyLow:  mix([132,186,214],[58,72,92],k),
-    seaLight:mix([64,178,206],[44,96,124],k),
-    seaDeep: mix([10,44,66],  [7,22,34],  k),
-    landTop: mix([102,178,124],[54,94,80], k),
-    landBot: mix([42,84,74],  [20,36,40], k),
-    sand:    mix([224,206,160],[150,140,112],k),
-    rock:    mix([132,138,150],[74,80,92],k),
-    haze:    mix([150,205,232],[92,110,130],k),
+    skyTop:  mix([96,158,206], [8,14,26],  k),
+    skyMid:  mix([156,206,234],[22,32,50], k),
+    skyLow:  mix([214,238,248],[58,72,92],k),
+    seaLight:mix([92,196,216],[44,96,124],k),
+    seaDeep: mix([18,96,132], [7,22,34],  k),
+    landTop: mix([128,198,120],[54,94,80], k),
+    landBot: mix([102,140,104],[20,36,40], k),
+    sand:    mix([240,224,176],[150,140,112],k),
+    rock:    mix([170,176,184],[74,80,92],k),
+    haze:    mix([206,232,246],[92,110,130],k),
     amb:     1 - k*0.42
   };
 }
@@ -554,7 +573,7 @@ function drawSky(P, wind, farSeaY){
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
 
   // 太阳（叠加混合，随风力淡出）
-  const sunA = Math.max(0.18, 1 - wind/13);
+  const sunA = Math.max(0.18, 1 - weatherK(wind)*0.92);
   const sx = W*0.78, sy = Math.max(34, farSeaY - H*0.36), r = H*0.042;
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
@@ -567,7 +586,7 @@ function drawSky(P, wind, farSeaY){
   ctx.restore();
 
   // 云（径向渐变柔边）
-  const dark = wind/12;
+  const dark = weatherK(wind);
   const cbase = [Math.round(242-140*dark), Math.round(247-134*dark), Math.round(253-126*dark)];
   const cstr = cbase.join(",");
   for (const c of clouds){
@@ -658,19 +677,14 @@ function drawSea(P, ph, S, wind){
   const surf = [];
   for (let i=0;i<=N;i++){
     const t = S.shoreT * i/N;
-    const amp = (2.0 + wind*2.2) * (0.35 + 0.65*Math.min(1, t/S.shoreT)) * VSC;
-    const y = Y(surfaceHeight(ph, t)) + waveOffset(t, time, amp);
+    // 以海床为上限：近岸浅水处波谷不低于海床，水面线与岸侧洪水线严丝合缝
+    const y = Math.min(Y(surfaceHeight(ph, t)) + waveOffset(t, time, surfAmp(wind, S, t)), seabedY(S, t));
     surf.push([X(t), y]);
     if (i===0) ctx.moveTo(X(t), y); else ctx.lineTo(X(t), y);
   }
   for (let i=N;i>=0;i--){ const t = S.shoreT * i/N; ctx.lineTo(X(t), seabedY(S,t)); }
   ctx.closePath();
-  const wg = ctx.createLinearGradient(0, Y(ph.level+1)-20, 0, H);
-  wg.addColorStop(0, rgba(P.seaLight, 0.92));
-  wg.addColorStop(0.10, rgba(P.seaLight, 0.72));
-  wg.addColorStop(0.55, rgba(P.seaDeep, 0.94));
-  wg.addColorStop(1, rgba(P.seaDeep, 1));
-  ctx.fillStyle = wg; ctx.fill();
+  ctx.fillStyle = waterGrad(P, ph); ctx.fill();
 
   // 水面高光带（纵深错觉）
   ctx.save();
@@ -1077,13 +1091,13 @@ function drawFlood(P, S, ph, wind){
   // 海堤未越顶时，海水只抵堤前；一旦越顶才向堤后内陆蔓延
   const tE = ph.over > 0 ? 1 : (S.plateauT - 0.032);
 
-  // 洪水区域：上边界为 min(水面, 地面)
+  // 水体：上边界为 min(水面, 地面)；与左侧海面共用同一套振幅与配色，岸线处无缝衔接
   ctx.beginPath();
   let started = false;
   for (let i=0;i<=N;i++){
     const t = S.shoreT + (tE-S.shoreT)*i/N;
     const lY = Y(landHeightSafe(S,t));
-    const wY = Y(surfaceHeight(ph, t)) + waveOffset(t, time, (2.2 + wind*0.9)*VSC);
+    const wY = Y(surfaceHeight(ph, t)) + waveOffset(t, time, surfAmp(wind, S, t));
     const y  = Math.min(lY, wY);
     if (!started){ ctx.moveTo(X(t), y); started = true; } else ctx.lineTo(X(t), y);
   }
@@ -1092,23 +1106,23 @@ function drawFlood(P, S, ph, wind){
     ctx.lineTo(X(t), Y(landHeightSafe(S,t)));
   }
   ctx.closePath();
+  ctx.fillStyle = waterGrad(P, ph); ctx.fill();
 
-  const g = ctx.createLinearGradient(0, Y(ph.level+0.8), 0, Y(0));
-  g.addColorStop(0, "rgba(120,225,255,.38)");
-  g.addColorStop(1, "rgba(40,120,175,.62)");
-  ctx.fillStyle = g; ctx.fill();
-
-  // 洪水锋面泡沫线
-  ctx.beginPath();
+  // 水面线：样式与海面描边完全一致，且仅在水体真正覆盖地表处描线，
+  // 使其与海面描边连成同一条水线，不再出现断口
+  ctx.strokeStyle = "rgba(180,240,255,"+(0.30 + wind*0.030)+")";
+  ctx.lineWidth = 1.6;
+  let open = false;
   for (let i=0;i<=N;i++){
     const t = S.shoreT + (tE-S.shoreT)*i/N;
     const lY = Y(landHeightSafe(S,t));
-    const wY = Y(surfaceHeight(ph, t)) + waveOffset(t, time, (2.2 + wind*0.9)*VSC);
-    const y  = Math.min(lY, wY);
-    if (i===0) ctx.moveTo(X(t), y); else ctx.lineTo(X(t), y);
+    const wY = Y(surfaceHeight(ph, t)) + waveOffset(t, time, surfAmp(wind, S, t));
+    if (wY < lY){
+      const y = Math.min(lY, wY);
+      if (!open){ ctx.beginPath(); ctx.moveTo(X(t), y); open = true; } else ctx.lineTo(X(t), y);
+    } else if (open){ ctx.stroke(); open = false; }
   }
-  ctx.strokeStyle = "rgba(220,250,255,"+(0.35 + wind*0.03)+")";
-  ctx.lineWidth = 2; ctx.stroke();
+  if (open) ctx.stroke();
 }
 
 /* ---------- 波浪与浪花 ---------- */
@@ -1119,8 +1133,7 @@ function drawWaves(P, ph, S, wind){
     ctx.save();
     for (let i=0;i<26;i++){
       const t = S.shoreT * (0.06 + 0.90*((i*0.137+ (time*0.06*(1+wind*0.12))) % 1));
-      const amp = (2.0 + wind*2.2) * (0.35 + 0.65*Math.min(1, t/S.shoreT)) * VSC;
-      const y = Y(surfaceHeight(ph, t)) + waveOffset(t, time, amp);
+      const y = Math.min(Y(surfaceHeight(ph, t)) + waveOffset(t, time, surfAmp(wind, S, t)), seabedY(S, t));
       const a = (0.05 + wind*0.035) * (0.5 + 0.5*Math.sin(time*3 + i*1.7));
       ctx.fillStyle = "rgba(240,252,255,"+a+")";
       ctx.beginPath();
@@ -1387,9 +1400,10 @@ function updatePanel(ph, windV){
   floodStat.classList.toggle("warn", ph.flood > 0 && ph.flood <= 1.5);
 
   els.riskBox.style.setProperty("--rc", risk.color);
+  els.riskBox.style.setProperty("--rcDeep", risk.deep);
   if (risk.lvl !== lastRisk){
     els.riskName.textContent = risk.name;
-    els.riskName.style.color = risk.color;
+    els.riskName.style.color = risk.deep;
     lastRisk = risk.lvl;
   }
   els.riskTxt.textContent = risk.txt;
