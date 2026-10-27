@@ -102,16 +102,20 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
   transition:width .35s cubic-bezier(.2,.8,.3,1),background .35s}
 
 /* 灾害等级条 */
-#riskBox{border-radius:13px;padding:11px 13px;border:1px solid #e3edf6;
+#riskBox{border-radius:12px;padding:8px 12px 8px 14px;border:1px solid #e3edf6;
   background:#f8fcff;transition:.4s;position:relative;overflow:hidden}
 #riskBox::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--rc,#12a05a);
   transition:.4s}
 .risk-row{display:flex;align-items:center;gap:9px}
-.risk-dot{width:9px;height:9px;border-radius:50%;background:var(--rc,#12a05a);flex:0 0 9px;
+.risk-dot{width:8px;height:8px;border-radius:50%;background:var(--rc,#12a05a);flex:0 0 8px;
   box-shadow:0 0 8px var(--rc,#12a05a);animation:blink 1.6s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
-.risk-name{font-size:15px;font-weight:700;color:var(--rcDeep,#0f8f52);letter-spacing:.6px;transition:.4s}
-.risk-txt{font-size:11px;color:var(--txt2);line-height:1.55;margin-top:8px;padding-left:18px;letter-spacing:.2px}
+.risk-name{font-size:14px;font-weight:700;color:var(--rcDeep,#0f8f52);letter-spacing:.6px;transition:.4s}
+.risk-lvl{margin-left:auto;display:flex;align-items:baseline;gap:3px;font-size:10px;color:var(--txt2);
+  letter-spacing:.3px}
+.risk-lvl b{font-size:16px;font-weight:700;color:var(--rcDeep,#0f8f52);font-variant-numeric:tabular-nums;
+  transition:.4s}
+.risk-txt{font-size:10.5px;color:var(--txt2);line-height:1.45;margin-top:5px;padding-left:17px;letter-spacing:.2px}
 
 /* ========================= 舞台 ========================= */
 #stage{flex:1 1 0;min-height:0;position:relative;border-radius:16px;overflow:hidden;min-width:0;
@@ -131,6 +135,40 @@ canvas{display:block;width:100%;height:100%}
   box-shadow:none;font-size:13.5px;letter-spacing:1.8px}
 .actBtn.ghost:active{background:rgba(13,143,192,.08);filter:none}
 
+/* ========================= 过程推演 HUD ========================= */
+#demoHud{position:absolute;left:50%;top:8px;z-index:3;min-width:126px;max-width:calc(100% - 20px);
+  border-radius:12px;padding:6px 12px 7px;text-align:left;
+  background:rgba(255,255,255,.86);
+  -webkit-backdrop-filter:blur(12px) saturate(1.25);backdrop-filter:blur(12px) saturate(1.25);
+  border:1px solid rgba(255,255,255,.95);box-shadow:0 8px 20px rgba(16,48,68,.22);
+  opacity:0;transform:translate(-50%,-10px);pointer-events:none;
+  transition:opacity .30s cubic-bezier(.2,.8,.3,1),transform .30s cubic-bezier(.2,.8,.3,1)}
+#demoHud.on{opacity:1;transform:translate(-50%,0)}
+.dh-row{display:flex;align-items:baseline;gap:14px;justify-content:space-between}
+.dh-step{font-size:9px;letter-spacing:1.2px;color:#6b8a9d}
+.dh-pct{font-size:10px;font-weight:700;color:#0b7799;font-variant-numeric:tabular-nums}
+.dh-name{font-size:14px;font-weight:700;color:#0f2f40;letter-spacing:.6px;margin-top:1px;white-space:nowrap}
+.dh-bar{height:2.5px;border-radius:2px;background:rgba(19,60,90,.13);margin-top:6px;overflow:hidden}
+.dh-bar i{display:block;height:100%;width:0;border-radius:2px;
+  background:linear-gradient(90deg,#17b3e0,#0fa98d);transition:width .12s linear}
+
+/* 声音开关 */
+#sndBtn{flex:0 0 auto;margin-left:auto;width:32px;height:32px;border-radius:10px;padding:0;
+  border:1px solid rgba(13,143,192,.26);background:#fff;color:#0b7fa8;display:grid;place-items:center;
+  cursor:pointer;box-shadow:0 2px 8px rgba(23,73,105,.10);-webkit-tap-highlight-color:transparent;
+  transition:transform .15s,color .2s,border-color .2s}
+#sndBtn:active{transform:scale(.95)}
+#sndBtn.off{color:#a8bcc8;border-color:#e3ecf3}
+#sndBtn.off #sndW1,#sndBtn.off #sndW2{display:none}
+
+/* 按钮行（两按钮共用一行，不增加卡片高度） */
+.btnRow{display:grid;grid-template-columns:1.45fr 1fr;gap:8px;margin-top:10px}
+.btnRow .actBtn{margin-top:0}
+.btnRow.rev{grid-template-columns:1fr 1.45fr}
+.btnRow.one{grid-template-columns:1fr}
+.card.playing .ctrl{opacity:.45;pointer-events:none}
+.card.playing .sec-title span{color:var(--cy2);font-weight:600}
+
 /* ========================= 矮屏适配（保证两张卡片都能完整显示、无需滑动） ========================= */
 @media (max-height:700px){
   #app{gap:6px;padding:6px}
@@ -149,13 +187,17 @@ canvas{display:block;width:100%;height:100%}
   input[type=range]{height:20px}
   .actBtn{margin-top:8px;padding:10px 14px;font-size:14px;letter-spacing:2px}
   .actBtn.ghost{font-size:13px}
-  #riskBox{padding:9px 12px}
-  .risk-name{font-size:14px}
-  .risk-txt{margin-top:6px;font-size:10.5px}
+  #riskBox{padding:7px 11px 7px 13px}
+  .risk-name{font-size:13.5px}
+  .risk-txt{margin-top:4px;font-size:10px}
   .stat{padding:7px 8px 6px}
   .stat small{font-size:9.5px;margin-bottom:3px}
   .stat .num{font-size:18px}
   .grid2{gap:6px}
+  #demoHud{padding:5px 11px 6px}
+  .dh-name{font-size:13px}
+  .btnRow{gap:7px;margin-top:8px}
+  #sndBtn{width:29px;height:29px}
 }
 
 </style>
@@ -176,11 +218,24 @@ canvas{display:block;width:100%;height:100%}
       <h1>风暴潮模拟平台</h1>
       <p>STORM SURGE SIMULATOR · 高中地理课堂演示</p>
     </div>
+    <button id="sndBtn" aria-label="关闭环境音" title="环境音开关">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4.5 9.2v5.6h3.4L13 19V5L7.9 9.2H4.5z"/>
+        <path id="sndW1" d="M16.4 8.6a5.2 5.2 0 0 1 0 6.8"/>
+        <path id="sndW2" d="M19 6.2a8.6 8.6 0 0 1 0 11.6"/>
+      </svg>
+    </button>
   </header>
 
   <!-- ==================== 舞台 ==================== -->
   <main id="stage">
     <canvas id="cv"></canvas>
+    <div class="demoHud" id="demoHud">
+      <div class="dh-row"><span class="dh-step" id="dhStep">阶段 1 / 5</span><b class="dh-pct" id="dhPct">0%</b></div>
+      <div class="dh-name" id="dhName">天文潮起涨</div>
+      <div class="dh-bar"><i id="dhBar"></i></div>
+    </div>
     <div id="warnFlash"></div>
   </main>
 
@@ -230,22 +285,20 @@ canvas{display:block;width:100%;height:100%}
         <div class="slope-ends"><span>◀ 陡峭海岸</span><span>平缓海滩 ▶</span></div>
       </div>
 
-      <button class="actBtn" id="evalBtn">评估灾害</button>
+      <div class="btnRow">
+        <button class="actBtn" id="demoBtn">▶ 过程推演</button>
+        <button class="actBtn ghost" id="evalBtn">评估灾害</button>
+      </div>
     </div>
 
     <div class="card view" id="resultSection">
       <div class="sec-title"><i></i>模拟结果<span>实时计算</span></div>
 
-      <div id="riskBox" style="margin-bottom:9px">
+      <div id="riskBox" style="margin-bottom:8px">
         <div class="risk-row">
           <div class="risk-dot"></div>
           <div class="risk-name" id="riskName">安全</div>
-          <div style="margin-left:auto;text-align:right;line-height:1.05">
-            <div style="font-size:10px;color:var(--txt2);letter-spacing:.3px">城市受灾等级</div>
-            <div style="font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--rcDeep,#0f8f52);margin-top:2px">
-              <span id="bldNum">0</span><span style="font-size:11px;font-weight:500;color:var(--txt2);margin-left:2px">级</span>
-            </div>
-          </div>
+          <div class="risk-lvl">受灾 <b id="bldNum">0</b> 级</div>
         </div>
         <div class="risk-txt" id="riskTxt">当前水位低于海堤顶，城市未受影响。</div>
       </div>
@@ -274,14 +327,18 @@ canvas{display:block;width:100%;height:100%}
         <div class="stat" id="floodStat">
           <small>城区最大淹没水深</small>
           <div class="num"><span id="sFlood">0.00</span><u>m</u></div>
+          <div class="mini-bar"><i id="barFlood" style="width:0%;background:linear-gradient(90deg,#ffd23f,#ff7a3d)"></i></div>
         </div>
         <div class="stat">
           <small>越堤高度</small>
           <div class="num"><span id="sOver">0.00</span><u>m</u></div>
+          <div class="mini-bar"><i id="barOver" style="width:0%;background:linear-gradient(90deg,#ff8a6a,#dc2f42)"></i></div>
         </div>
       </div>
 
-      <button class="actBtn ghost" id="resetBtn">重新模拟</button>
+      <div class="btnRow one">
+        <button class="actBtn ghost" id="resetBtn">参数调整</button>
+      </div>
     </div>
 
   </section>
@@ -391,7 +448,7 @@ function evaluate(ph){
   if (ph.over <= 0){
     const gap = ph.wall - ph.level;
     if (gap > 1.0){ lvl=0; name="安全"; color="#3ddc84"; deep="#0f8f52";
-      txt="当前水位低于海堤顶 "+gap.toFixed(1)+" m，海水被海堤挡住，城市未受影响。"; }
+      txt="水位低于海堤顶 "+gap.toFixed(1)+" m，海堤把海水挡在城市之外。"; }
     else { lvl=1; name="水位预警"; color="#ffd23f"; deep="#a87400";
       txt="水位已接近海堤顶（仅差 "+gap.toFixed(1)+" m），需加强巡查与预报。"; }
   } else if (ph.over <= 1.0){
@@ -540,7 +597,7 @@ function seedClouds(){
                   s: 0.6+Math.random()*1.1, a: 0.15+Math.random()*0.35, v: 0.4+Math.random()*0.7 });
   }
   windLines = [];
-  for (let i=0;i<46;i++) windLines.push({ y: H*(0.03+Math.random()*0.30), x: Math.random()*W,
+  for (let i=0;i<66;i++) windLines.push({ y: H*(0.03+Math.random()*0.30), x: Math.random()*W,
     len: 20+Math.random()*80, a: 0.05+Math.random()*0.12 });
 }
 
@@ -548,10 +605,20 @@ function seedClouds(){
    主绘制
    ========================================================================== */
 let time = 0, lastTs = 0;
+let shake = 0, prevOver = 0;          // 越堤瞬间的震屏
+let boltT = 0, boltNext = 4, boltX = 0, boltSeed = 0, flashA = 0;
+let prevWindLv = 0, windTremT = 0;    // 强风只在刚跨入时抖 1 秒
+let gaugeA = 1, demoPhase = -1;       // 水位标尺在推演中渐隐
 
 function frame(ts){
   const dt = Math.min(0.05, (ts - lastTs)/1000 || 0.016);
   lastTs = ts; time += dt;
+
+  /* --- 过程推演驱动 --- */
+  if (demo.on) driveDemo(dt);
+
+  /* 推演时左下角水位标尺渐隐，结束后恢复 */
+  gaugeA += ((demo.on ? 0 : 1) - gaugeA) * Math.min(1, dt*5.5);
 
   /* --- 平滑过渡 --- */
   const phTarget = physics(state.wind, state.tide, state.slope);
@@ -559,6 +626,44 @@ function frame(ts){
   view.tide  += (state.tide - view.tide) * Math.min(1, dt*5);
   view.surge += (phTarget.surge - view.surge) * Math.min(1, dt*4.5);
   view.level += (phTarget.level - view.level) * Math.min(1, dt*4.5);
+
+  /* --- 越堤瞬间：震屏 + 触感反馈 --- */
+  const overNow = view.level - phTarget.wall;
+  if (prevOver <= 0 && overNow > 0){
+    shake = 1;
+    if (navigator.vibrate) navigator.vibrate([18, 40, 26]);
+    sfx.thud();
+  }
+  prevOver = overNow;
+
+  /* --- 强风：只在刚跨入 9 / 10 级时抖约 1 秒，之后不再持续抖动（避免眩晕） --- */
+  if ((view.wind >= 9 && prevWindLv < 9) || (view.wind >= 10 && prevWindLv < 10)) windTremT = 1.0;
+  if (windTremT > 0){
+    windTremT = Math.max(0, windTremT - dt);
+    shake = Math.max(shake, 0.62 * Math.min(1, windTremT/0.35));
+  }
+  if (shake > 0) shake = Math.max(0, shake - dt/0.45);
+
+  /* --- 风力跨入台风级（≥10 级）：一次触感提示 --- */
+  if (view.wind >= 10 && prevWindLv < 10 && navigator.vibrate) navigator.vibrate([14, 46, 20]);
+  prevWindLv = view.wind;
+
+  /* --- 雷暴时的闪电 --- */
+  if (view.wind >= 9){
+    boltNext -= dt;
+    if (boltNext <= 0){
+      boltNext = 3.2 + Math.random()*5.5;
+      boltT = 0.55; flashA = 0.34;
+      boltX = W*(0.10 + Math.random()*0.72);
+      boltSeed = Math.random()*100000;
+      if (navigator.vibrate) navigator.vibrate([10, 26, 14]);
+    }
+  }
+  if (boltT > 0) boltT -= dt;
+  if (flashA > 0) flashA = Math.max(0, flashA - dt*2.4);
+
+  /* --- 环境音随画面状态变化 --- */
+  sfx.update(view.wind, overNow);
 
   render(phTarget);
   requestAnimationFrame(frame);
@@ -584,7 +689,12 @@ function render(phTarget){
 
   ctx.clearRect(0,0,W,H);
 
+  /* 震屏：越堤瞬间画面轻微抖动 */
+  const sh = shake > 0 ? shake * 5.5 : 0;
+  if (sh){ ctx.save(); ctx.translate((Math.random()-0.5)*sh, (Math.random()-0.5)*sh); }
+
   drawSky(P, windV, farSeaY);
+  drawBolt();
   drawHaze(P, S, windV, farSeaY);
   drawSea(P, ph, S, windV);
   drawLand(P, S, ph);
@@ -594,10 +704,66 @@ function render(phTarget){
   drawFlood(P, S, ph, windV);
   drawWaves(P, ph, S, windV);
   drawParticles(P, windV, ph, S);
-  drawGauge(P, S, ph);
+  if (gaugeA > 0.02){
+    ctx.save(); ctx.globalAlpha = gaugeA;
+    drawGauge(P, S, ph);
+    ctx.restore();
+  }
   drawLabels(P, S, ph);
+  if (demo.on) drawDemoAnno(P, S, ph);
+
+  if (sh) ctx.restore();
+
+  /* 闪电整体提亮 */
+  if (flashA > 0){
+    ctx.save(); ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = "rgba(206,232,255,"+(flashA*0.55)+")";
+    ctx.fillRect(0,0,W,H); ctx.restore();
+  }
 
   updatePanel(phTarget, windV);
+}
+
+/* ---------- 闪电 ---------- */
+function drawBolt(){
+  if (boltT <= 0 || W <= 0) return;
+  const life = Math.max(0, boltT / 0.55);
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.strokeStyle = "rgba(202,235,255,"+(0.92*life)+")";
+  ctx.shadowColor = "rgba(150,205,255,.95)";
+  ctx.shadowBlur = 14;
+  ctx.lineWidth = 1.9;
+  ctx.lineCap = "round";
+  let s = boltSeed, x = boltX, y = 0;
+  const endY = MSL_Y * 0.92;
+  ctx.beginPath(); ctx.moveTo(x, y);
+  for (let i=0; i<26 && y < endY; i++){
+    s = (s * 9301 + 49297) % 233280;
+    const r1 = s / 233280;
+    s = (s * 9301 + 49297) % 233280;
+    const r2 = s / 233280;
+    x += (r1 - 0.5) * W * 0.055;
+    y += 10 + r2 * 20;
+    ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  /* 分叉 */
+  ctx.lineWidth = 1.1;
+  ctx.strokeStyle = "rgba(196,230,255,"+(0.62*life)+")";
+  for (let b=0;b<2;b++){
+    let bx = boltX + (b? -1:1) * W*0.02, by = endY*(0.32 + b*0.22), bs = boltSeed + b*977;
+    ctx.beginPath(); ctx.moveTo(bx, by);
+    for (let i=0;i<5;i++){
+      bs = (bs * 9301 + 49297) % 233280;
+      const r = bs / 233280;
+      bx += (r - 0.35) * W * 0.05;
+      by += 8 + r * 12;
+      ctx.lineTo(bx, by);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
 }
 
 /* ---------- 天空 ---------- */
@@ -645,15 +811,29 @@ function drawSky(P, wind, farSeaY){
 
   // 风的流线
   ctx.save();
-  ctx.strokeStyle = "rgba(220,240,255,"+(0.10 + wind*0.022)+")";
-  ctx.lineWidth = 1.3;
+  ctx.strokeStyle = "rgba(226,244,255,"+(0.09 + wind*0.030)+")";
+  ctx.lineWidth = 1.2 + wind*0.06;
   for (const l of windLines){
-    l.x += (10 + wind*46) * 0.016;
+    l.x += (10 + wind*62) * 0.016;
     if (l.x > W+l.len) l.x = -l.len;
-    ctx.globalAlpha = l.a * (0.5 + wind/12);
+    ctx.globalAlpha = l.a * (0.55 + wind/10);
     ctx.beginPath(); ctx.moveTo(l.x, l.y); ctx.lineTo(l.x+l.len, l.y); ctx.stroke();
   }
   ctx.restore();
+
+  // 强风阵风带（≥9 级）：几道快速掠过的长条纹，直观表现“风很大”
+  if (wind >= 9){
+    ctx.save();
+    ctx.strokeStyle = "rgba(232,246,255,.13)";
+    ctx.lineWidth = 2.6;
+    ctx.lineCap = "round";
+    for (let i=0;i<6;i++){
+      const y = H*(0.035 + 0.052*i) + Math.sin(time*2.2 + i)*2.5;
+      const x = ((time*(300 + wind*42) + i*W*0.29) % (W*1.7)) - W*0.35;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + W*0.15, y - 1.5); ctx.stroke();
+    }
+    ctx.restore();
+  }
 }
 
 /* ---------- 远处海岸（空气透视） ---------- */
@@ -1164,8 +1344,9 @@ function drawWaves(P, ph, S, wind){
   const N = 90;
   // 白浪冠
   if (wind >= 4){
+    const nc = Math.round(16 + wind*2.6);
     ctx.save();
-    for (let i=0;i<26;i++){
+    for (let i=0;i<nc;i++){
       const t = S.shoreT * (0.06 + 0.90*((i*0.137+ (time*0.06*(1+wind*0.12))) % 1));
       const y = Math.min(Y(surfaceHeight(ph, t)) + waveOffset(t, time, surfAmp(wind, S, t)), seabedY(S, t));
       const a = (0.05 + wind*0.035) * (0.5 + 0.5*Math.sin(time*3 + i*1.7));
@@ -1173,6 +1354,19 @@ function drawWaves(P, ph, S, wind){
       ctx.beginPath();
       ctx.ellipse(X(t), y-2, W*0.012, 2.4 + wind*0.22, 0, 0, 7);
       ctx.fill();
+    }
+    ctx.restore();
+  }
+  // 风浪泡沫条纹（≥7 级）：顺风向拉长的白色沫带
+  if (wind >= 7){
+    ctx.save();
+    const nf = Math.round(6 + wind*1.8);
+    for (let i=0;i<nf;i++){
+      const t = S.shoreT * (0.05 + 0.88*((i*0.163 + time*0.05*(1 + wind*0.10)) % 1));
+      const y = Math.min(Y(surfaceHeight(ph, t)) + waveOffset(t, time, surfAmp(wind, S, t)), seabedY(S, t));
+      const a = (0.04 + wind*0.011) * (0.45 + 0.55*Math.sin(time*2.2 + i*2.1));
+      ctx.fillStyle = "rgba(238,252,255,"+a.toFixed(3)+")";
+      ctx.fillRect(X(t) - W*0.022, y - 3, W*0.044, 1.5 + wind*0.05);
     }
     ctx.restore();
   }
@@ -1206,6 +1400,23 @@ function drawWaves(P, ph, S, wind){
     }
     ctx.restore();
   }
+
+  /* 晴天海面碎金：太阳正下方的一道粼光，随波起伏 */
+  const wk = weatherK(wind);
+  if (wk < 0.55){
+    ctx.save();
+    for (let i=0;i<16;i++){
+      const t = S.shoreT * (0.56 + 0.40*((i*0.137) % 1));
+      const y = Y(surfaceHeight(ph, t)) + waveOffset(t, time, surfAmp(wind, S, t));
+      const tw = Math.max(0, Math.sin(time*3.1 + i*1.9));
+      const a = (0.10 + 0.34*tw) * (1 - wk*1.55);
+      if (a <= 0.01) continue;
+      ctx.fillStyle = "rgba(255,247,214,"+a.toFixed(3)+")";
+      const wpx = W*0.020*(0.55 + 0.75*(((i*37)%10)/10));
+      ctx.fillRect(X(t) - wpx/2, y - 1, wpx, 1.7);
+    }
+    ctx.restore();
+  }
 }
 
 /* ---------- 雨与浪花粒子 ---------- */
@@ -1217,13 +1428,26 @@ function drawParticles(P, wind, ph, S){
   while (rain.length > want) rain.pop();
   if (rain.length){
     ctx.save();
-    ctx.strokeStyle = "rgba(190,225,250,.32)"; ctx.lineWidth = 1.1;
+    ctx.strokeStyle = "rgba(190,225,250,.30)";
+    ctx.lineWidth = 1.15; ctx.lineCap = "round";
+    /* 所有雨丝合成一条路径、只描边一次：同色线段重叠时不叠加透明度，
+       避免个别雨丝因相互叠加而突然变白 */
+    ctx.beginPath();
     for (const r of rain){
       r.x += (wind*4.5 + 6) * r.v * 0.55;
       r.y += (wind*5.5 + 8) * r.v * 0.55;
       if (r.y > MSL_Y + 20){ r.y = -20; r.x = Math.random()*W*1.3 - W*0.15; }
       if (r.x > W+40) r.x = -40;
-      ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - r.len*0.35, r.y - r.len); ctx.stroke();
+      const sl = 0.16 + wind*0.052;                 // 风力越大，雨越斜
+      ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - r.len*sl, r.y - r.len);
+    }
+    ctx.stroke();
+    /* 雨点砸在海面上溅起的小白点 */
+    for (let i=0;i<10;i++){
+      const t = Math.random()*S.shoreT;
+      const y = Y(surfaceHeight(ph, t)) + 1 + Math.random()*3;
+      ctx.fillStyle = "rgba(235,250,255,.20)";
+      ctx.fillRect(X(t), y, 2.2, 1.1);
     }
     ctx.restore();
   }
@@ -1234,7 +1458,7 @@ function drawParticles(P, wind, ph, S){
   const spawnY = Math.min(wallTopY, Y(ph.level));   // 水位淹没堤顶时，浪花从水面起
   const spawn = ph.over > -0.6 && wind >= 6;
   if (spawn){
-    const n = Math.round((wind-5) * (ph.over > 0 ? 3.4 : 1.2));
+    const n = Math.round((wind-5) * (ph.over > 0 ? 4.2 : 1.9));
     for (let i=0;i<n;i++){
       if (spray.length > 220) break;
       spray.push({
@@ -1334,31 +1558,102 @@ function drawGauge(P, S, ph){
 }
 
 /* ---------- 场景内文字标注 ---------- */
-function pill(cx, cy, text, color){
-  ctx.font = "600 11px " + FONT;
-  ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  const w = ctx.measureText(text).width + 20;
+function hexRGB(h){
+  const n = parseInt(h.slice(1), 16);
+  return [(n>>16)&255, (n>>8)&255, n&255];
+}
+
+/* 顶部受灾等级胶囊：玻璃质感圆角标，晴/雨两套底色之间连续过渡，保证始终可读 */
+function statusCapsule(cx, cy, name, grade, color, deep, wind){
+  const k = weatherK(wind);                                 // 0=晴 1=暴雨
+  // 底色明暗跟随时段实际亮度（中段天色已偏暗，胶囊同步转入深色玻璃，避免灰蒙感）
+  const d = Math.min(1, Math.max(0, (k - 0.22) / 0.40));
+  const ink = mix(hexRGB(deep), hexRGB(color), d);
+  const acc = mix(hexRGB(deep), hexRGB(color), Math.max(d, 0.40));
+
+  const fam = FONT, fsName = 12, fsGrade = 10;
+  const track = ("letterSpacing" in ctx) ? "0.5px" : null;   // 字距微调（支持的浏览器才有）
+  if (track) ctx.letterSpacing = track;
+  ctx.font = "600 "+fsName+"px "+fam;
+  const wName = ctx.measureText(name).width;
+  let wGrade = 0;
+  if (grade > 0){
+    ctx.font = "600 "+fsGrade+"px "+fam;
+    wGrade = ctx.measureText("· "+grade+" 级").width;
+  }
+
+  const padX = 13, dotR = 3.0, gapDot = 7.5, gapGrade = 7;
+  const w = padX*2 + dotR*2 + gapDot + wName + (grade > 0 ? gapGrade + wGrade : 0);
+  const h = 28, r = h/2, x = cx - w/2, y = cy - h/2;
+
+  /* 1) 玻璃底：上浅下深的双色渐变 + 柔和外投影 */
   ctx.save();
-  ctx.fillStyle = "rgba(5,14,23,.68)";
-  roundRect(cx-w/2, cy-11, w, 22, 11); ctx.fill();
-  ctx.globalAlpha = 0.40; ctx.strokeStyle = color; ctx.lineWidth = 1.1;
-  roundRect(cx-w/2, cy-11, w, 22, 11); ctx.stroke();
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = color; ctx.fillText(text, cx, cy+0.5);
+  ctx.shadowColor = "rgba(16,48,68,"+(0.20 - d*0.12).toFixed(3)+")";
+  ctx.shadowBlur = 6 + d*9; ctx.shadowOffsetY = 2;
+  const g = ctx.createLinearGradient(0, y, 0, y+h);
+  g.addColorStop(0, rgba(mix([255,255,255],[26,42,58],d), 0.96 - d*0.20));
+  g.addColorStop(1, rgba(mix([236,246,252],[8,17,28],d), 0.90 + d*0.02));
+  ctx.fillStyle = g;
+  roundRect(x, y, w, h, r); ctx.fill();
   ctx.restore();
+
+  /* 1b) 等级色淡淡晕染（晴天为主），让底色与状态呼应而不脏 */
+  ctx.save();
+  ctx.fillStyle = rgba(mix(hexRGB(color),[255,255,255], 0.74), 0.18*(1-d));
+  roundRect(x, y, w, h, r); ctx.fill();
+  ctx.restore();
+
+  /* 2) 发丝描边 + 顶部高光，形成玻璃厚度 */
+  ctx.save();
+  ctx.strokeStyle = rgba(acc, 0.36 + d*0.14);
+  ctx.lineWidth = 1;
+  roundRect(x+0.5, y+0.5, w-1, h-1, r-0.5); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x + r*0.72, y + 1.3); ctx.lineTo(x + w - r*0.72, y + 1.3);
+  ctx.strokeStyle = rgba(mix([255,255,255],[168,190,212],d), 0.62 - d*0.44);
+  ctx.stroke();
+  ctx.restore();
+
+  /* 3) 状态圆点（带微光） */
+  const dx = x + padX + dotR;
+  ctx.save();
+  ctx.shadowColor = rgba(acc, 0.75); ctx.shadowBlur = 4 + d*4;
+  ctx.fillStyle = mix(hexRGB(color), hexRGB(deep), d*0.40);
+  ctx.beginPath(); ctx.arc(dx, cy, dotR, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  /* 4) 文字：主名加粗，等级后缀小一号并以细分隔线隔开 */
+  const tx = dx + dotR + gapDot;
+  ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  ctx.fillStyle = ink;
+  ctx.font = "600 "+fsName+"px "+fam;
+  ctx.fillText(name, tx, cy + 0.5);
+
+  if (grade > 0){
+    const sx = tx + wName + gapGrade*0.5;
+    ctx.save();
+    ctx.strokeStyle = rgba(acc, 0.32); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(sx, cy-6.5); ctx.lineTo(sx, cy+6.5); ctx.stroke();
+    ctx.restore();
+    ctx.font = "600 "+fsGrade+"px "+fam;
+    ctx.fillStyle = rgba(ink, 0.94);
+    ctx.fillText("· "+grade+" 级", tx + wName + gapGrade, cy + 0.9);
+  }
+  if (track) ctx.letterSpacing = "0px";
+  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
 }
 function drawLabels(P, S, ph){
   const wind = view.wind;
 
-  // 向岸风箭头（仅保留视觉风向指示，不再显示文字）
-  for (let i=0;i<3;i++){
-    const ax  = W*0.042 + i*W*0.056;
-    const ay  = Y(8.2 + i*1.5);
-    const len = W*0.020 + wind*W*0.0050;
+  // 向岸风箭头：随风力变长、变亮、变密
+  for (let i=0;i<4;i++){
+    const ax  = W*0.042 + i*W*0.062;
+    const ay  = Y(8.2 + i*1.35);
+    const len = W*0.018 + wind*W*0.0058;
     ctx.save();
-    ctx.globalAlpha = 0.20 + wind*0.045;
+    ctx.globalAlpha = 0.18 + wind*0.056;
     ctx.strokeStyle = "#9fe4ff"; ctx.fillStyle = "#9fe4ff";
-    ctx.lineWidth = 1.8; ctx.lineCap = "round";
+    ctx.lineWidth = 1.7 + wind*0.05; ctx.lineCap = "round";
     ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax+len, ay); ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(ax+len, ay); ctx.lineTo(ax+len-8, ay-4.5); ctx.lineTo(ax+len-8, ay+4.5);
@@ -1366,12 +1661,84 @@ function drawLabels(P, S, ph){
     ctx.restore();
   }
 
-  // 顶部灾情等级标签：把模拟结果直接显示在画面中
-  const risk  = evaluate(ph);
-  const grade = disasterGrade(risk.lvl);
-  const txt   = grade > 0 ? (risk.name + " · " + grade + " 级") : risk.name;
-  pill(W*0.5, 26, txt, risk.color);
+  // 顶部灾情等级标签：把模拟结果直接显示在画面中（推演过程中由 HUD 接管）
+  if (!demo.on){
+    const risk  = evaluate(ph);
+    const grade = disasterGrade(risk.lvl);
+    statusCapsule(W*0.5, 26, risk.name, grade, risk.color, risk.deep, wind);
+  }
   ctx.textBaseline = "alphabetic";
+}
+/* ---------- 推演讲解：把每一阶段直接标在画面里 ---------- */
+function annoPill(cx, cy, text, accent){
+  ctx.save();
+  ctx.font = "700 10px " + FONT;
+  const tw = ctx.measureText(text).width;
+  const w = tw + 20, h = 21, x = cx - w/2, y = cy - h/2;
+  ctx.shadowColor = "rgba(8,30,50,.34)"; ctx.shadowBlur = 9; ctx.shadowOffsetY = 3;
+  ctx.fillStyle = "rgba(255,255,255,.93)";
+  roundRect(x, y, w, h, h/2); ctx.fill();
+  ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  const rgb = hexRGB(accent);
+  ctx.strokeStyle = rgba("rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")", 0.55); ctx.lineWidth = 1;
+  roundRect(x+0.5, y+0.5, w-1, h-1, h/2-0.5); ctx.stroke();
+  ctx.fillStyle = "#0f2f40"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(text, cx, cy + 0.5);
+  ctx.restore();
+  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+}
+function annoArrow(x1, y1, x2, y2, color, lw){
+  ctx.save();
+  ctx.strokeStyle = color; ctx.fillStyle = color;
+  ctx.lineWidth = lw || 1.8; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  const ang = Math.atan2(y2 - y1, x2 - x1), s = 8;
+  ctx.beginPath(); ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - s*Math.cos(ang - 0.40), y2 - s*Math.sin(ang - 0.40));
+  ctx.lineTo(x2 - s*Math.cos(ang + 0.40), y2 - s*Math.sin(ang + 0.40));
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function drawDemoAnno(P, S, ph){
+  const i = demoPhase;
+  if (i < 0) return;
+  const sY = t => Y(surfaceHeight(ph, t));
+  const gx = W*0.30;
+  const bob = Math.sin(time*2.2)*1.2;
+
+  if (i === 0){
+    const y = sY(0.24);
+    annoPill(gx, y - 44 + bob, "天文潮起涨", "#0f9fd4");
+    annoArrow(gx, y - 8, gx, y - 29, "rgba(15,159,212,.9)", 2);
+  } else if (i === 1){
+    const y = sY(0.30);
+    annoPill(W*0.45, y - 76 + bob, "气压下降 · 海水被吸高", "#7c9dff");
+    annoArrow(W*0.45, y - 63, W*0.45, y - 14, "rgba(124,157,255,.92)", 2);
+  } else if (i === 2){
+    const y = sY(0.30);
+    annoPill(gx, y - 58 + bob, "向岸风推水堆积", "#0ea88a");
+    for (let k = 0; k < 3; k++){
+      const t0 = 0.05 + k*0.10, t1 = t0 + 0.08;
+      annoArrow(X(t0), sY(t0) - 15, X(t1), sY(t1) - 15, "rgba(14,168,138,.95)", 2.2);
+    }
+  } else if (i === 3){
+    const lv = ph.level;
+    ctx.save();
+    ctx.setLineDash([5, 4]);
+    ctx.strokeStyle = "rgba(220,47,66,.55)"; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(2, Y(lv)); ctx.lineTo(X(S.shoreT), Y(lv)); ctx.stroke();
+    ctx.restore();
+    annoPill(gx, Y(lv) - 34 + bob, "最高水位 " + (lv>=0?"+":"") + lv.toFixed(1) + " m", "#dc2f42");
+    if (ph.over > 0){
+      const wx = X(S.plateauT + 0.01), wy = Y(lv);
+      annoArrow(wx + 2, wy - 3, wx + W*0.085, wy - 22, "rgba(220,47,66,.95)", 1.8);
+      annoPill(Math.min(W - 54, wx + W*0.185), wy - 31, "越堤 " + ph.over.toFixed(1) + " m", "#dc2f42");
+    }
+  } else {
+    const y = sY(0.24);
+    annoPill(gx, y - 40 + bob, "水位回落", "#0f9fd4");
+    annoArrow(gx, y - 31, gx, y - 12, "rgba(15,159,212,.85)", 2);
+  }
 }
 function roundRect(x,y,w,h,r){
   ctx.beginPath();
@@ -1426,6 +1793,8 @@ function updatePanel(ph, windV){
   $("barPres").style.width  = Math.min(100, ph.surgePres/R_MAX*100) + "%";
   $("barSurge").style.width = Math.min(100, ph.surge/R_MAX*100) + "%";
   $("barLevel").style.width = Math.min(100, Math.max(0,(ph.level+2)/10*100)) + "%";
+  $("barFlood").style.width = Math.min(100, Math.max(0, ph.flood/4*100)) + "%";
+  $("barOver").style.width  = Math.min(100, Math.max(0, ph.over/3*100)) + "%";
 
   $("bldNum").textContent = disasterGrade(risk.lvl);
 
@@ -1446,6 +1815,276 @@ function updatePanel(ph, windV){
   els.warnFlash.style.opacity = risk.lvl >= 4 ? (0.35 + 0.35*Math.abs(Math.sin(time*2))) : "0";
 
   // 建筑受灾统计用（在 evaluate 里已用最新 city）
+}
+
+/* ============================================================================
+   环境音：Web Audio 实时合成（风声 / 雨声 / 涌浪 / 越堤低频轰鸣），无外部音频文件
+   ========================================================================== */
+const sfx = (() => {
+  let ac = null, master = null, booted = false, on = true, armed = false;
+  let gWind, fWind, gRain, gSurf, gRumble;
+  let lWind = -1, lRain = -1, lSurf = -1, lRum = -1;
+
+  function noiseBuf(context){
+    const len = Math.floor(context.sampleRate * 2);
+    const b = context.createBuffer(1, len, context.sampleRate);
+    const d = b.getChannelData(0);
+    let lp = 0;
+    for (let i = 0; i < len; i++){
+      const w = Math.random()*2 - 1;
+      lp = lp*0.96 + w*0.04;
+      d[i] = (w*0.5 + lp*2.0) * 0.55;
+    }
+    return b;
+  }
+
+  function boot(){
+    if (booted) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    ac = new AC(); booted = true;
+    master = ac.createGain();
+    master.gain.value = on ? 0.55 : 0;
+    master.connect(ac.destination);
+
+    const buf = noiseBuf(ac);
+
+    const sW = ac.createBufferSource(); sW.buffer = buf; sW.loop = true;
+    fWind = ac.createBiquadFilter(); fWind.type = "bandpass"; fWind.frequency.value = 320; fWind.Q.value = 0.6;
+    gWind = ac.createGain(); gWind.gain.value = 0;
+    sW.connect(fWind); fWind.connect(gWind); gWind.connect(master); sW.start();
+
+    const sR = ac.createBufferSource(); sR.buffer = buf; sR.loop = true; sR.playbackRate.value = 1.4;
+    const fR = ac.createBiquadFilter(); fR.type = "highpass"; fR.frequency.value = 2600;
+    gRain = ac.createGain(); gRain.gain.value = 0;
+    sR.connect(fR); fR.connect(gRain); gRain.connect(master); sR.start();
+
+    const sS = ac.createBufferSource(); sS.buffer = buf; sS.loop = true; sS.playbackRate.value = 0.42;
+    const fS = ac.createBiquadFilter(); fS.type = "lowpass"; fS.frequency.value = 380;
+    gSurf = ac.createGain(); gSurf.gain.value = 0;
+    sS.connect(fS); fS.connect(gSurf); gSurf.connect(master); sS.start();
+
+    const osc = ac.createOscillator(); osc.type = "sine"; osc.frequency.value = 44;
+    gRumble = ac.createGain(); gRumble.gain.value = 0;
+    osc.connect(gRumble); gRumble.connect(master); osc.start();
+  }
+
+  function ramp(param, v){
+    try { param.setTargetAtTime(v, ac.currentTime, 0.2); } catch(e){}
+  }
+
+  return {
+    kick(){ boot(); if (ac && ac.state === "suspended") ac.resume(); },
+    /* 浏览器要求先有用户手势：首次触摸或按键时自动起播（界面默认是“开启”状态） */
+    arm(){
+      if (armed) return;
+      armed = true;
+      const go = () => {
+        boot();
+        if (ac && ac.state === "suspended") ac.resume();
+        window.removeEventListener("pointerdown", go);
+        window.removeEventListener("touchstart", go);
+        window.removeEventListener("keydown", go);
+      };
+      window.addEventListener("pointerdown", go, { passive: true });
+      window.addEventListener("touchstart", go, { passive: true });
+      window.addEventListener("keydown", go);
+    },
+    toggle(){
+      on = !on;
+      boot();
+      if (master) master.gain.setTargetAtTime(on ? 0.55 : 0, ac.currentTime, 0.15);
+      if (ac && ac.state === "suspended") ac.resume();
+      return on;
+    },
+    get on(){ return on; },
+    /* 越堤瞬间的低频闷响 */
+    thud(){
+      if (!booted || !on) return;
+      const t0 = ac.currentTime;
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = "sine";
+      o.frequency.setValueAtTime(86, t0);
+      o.frequency.exponentialRampToValueAtTime(38, t0 + 0.34);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.30, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.42);
+      o.connect(g); g.connect(master);
+      o.start(t0); o.stop(t0 + 0.46);
+    },
+    update(wind, over){
+      if (!booted || !ac) return;
+      const wk = Math.min(1, wind/12);
+
+      const wv = 0.012 + Math.pow(wk, 1.6) * 0.16;
+      if (Math.abs(wv - lWind) > 0.004){
+        lWind = wv; ramp(fWind.frequency, 230 + wind*64); ramp(gWind.gain, on ? wv : 0);
+      }
+      const rv = Math.max(0, (wind - 6)/6) * 0.10;
+      if (Math.abs(rv - lRain) > 0.004){
+        lRain = rv; ramp(gRain.gain, on ? rv : 0);
+      }
+      const sv = 0.010 + wk*0.030 + (over > 0 ? 0.075 : over > -0.6 ? 0.025 : 0);
+      if (Math.abs(sv - lSurf) > 0.004){
+        lSurf = sv; ramp(gSurf.gain, on ? sv : 0);
+      }
+      const rmv = over > 0 ? Math.min(0.085, 0.028 + over*0.028) : 0;
+      if (Math.abs(rmv - lRum) > 0.004){
+        lRum = rmv; ramp(gRumble.gain, on ? rmv : 0);
+      }
+    }
+  };
+})();
+
+/* ============================================================================
+   完整过程推演：回退到起始状态 → 起潮 → 台风逼近 → 向岸风增水 → 最高水位 → 越堤 → 退水
+   ========================================================================== */
+const lerp    = (a,b,k) => a + (b-a)*k;
+const clampN  = (v,a,b) => Math.min(b, Math.max(a, v));
+const easeIO  = k => k < 0.5 ? 2*k*k : 1 - Math.pow(-2*k + 2, 2)/2;
+const easeOut = k => 1 - Math.pow(1-k, 2.2);
+
+const DEMO_PHASES = [
+  { a:0.00, b:0.16, name:"天文潮起涨" },
+  { a:0.16, b:0.38, name:"台风逼近" },
+  { a:0.38, b:0.60, name:"向岸风增水" },
+  { a:0.60, b:0.90, name:"风暴潮登陆" },
+  { a:0.90, b:1.00, name:"潮水退去" }
+];
+
+const demo = { on:false, t:0, dur:9, scen:null };
+let hudPhase = -2, hudPct = -1, lastDW = -1, lastDT = -99;
+
+function demoCalm(sc){
+  return { wind: 2, tide: clampN(sc.tide - 1.2, -2, 3) };
+}
+function demoAt(u, sc){
+  const c = demoCalm(sc);
+  let w, tide;
+  if (u < 0.16){
+    const q = u/0.16;
+    tide = lerp(c.tide, sc.tide, easeIO(q));
+    w = lerp(c.wind, 3, q);
+  } else if (u < 0.38){
+    const q = (u - 0.16)/0.22;
+    tide = sc.tide;
+    w = lerp(3, Math.max(3, sc.wind*0.78), easeOut(q));
+  } else if (u < 0.60){
+    const q = (u - 0.38)/0.22;
+    tide = sc.tide;
+    w = lerp(Math.max(3, sc.wind*0.78), sc.wind, easeIO(q));
+  } else if (u < 0.90){
+    tide = sc.tide;
+    w = sc.wind;
+  } else {
+    const q = (u - 0.90)/0.10;
+    tide = lerp(sc.tide, c.tide, easeIO(q));
+    w = lerp(sc.wind, 3, easeIO(q));
+  }
+  return { wind: clampN(w, 0, 12), tide: clampN(tide, -2, 3) };
+}
+
+function applyDemoUI(){
+  if (state.wind !== lastDW){
+    lastDW = state.wind;
+    els.windNum.textContent = state.wind;
+    els.windSpeed.textContent = Math.round(BEAUFORT[state.wind]);
+    els.windName.textContent = tcCat(state.wind) || "普通风力";
+    els.windRange.value = state.wind; setSliderFill(els.windRange);
+  }
+  if (state.tide !== lastDT){
+    lastDT = state.tide;
+    els.tideNum.textContent = (state.tide>=0?"+":"") + state.tide.toFixed(1);
+    els.tideName.textContent = tideName(state.tide);
+    els.tideRange.value = state.tide; setSliderFill(els.tideRange);
+  }
+}
+
+function setHud(i, u){
+  if (i !== hudPhase){
+    hudPhase = i;
+    const p = i >= 0 ? DEMO_PHASES[i] : null;
+    $("dhStep").textContent = i >= 0 ? ("阶段 " + (i+1) + " / " + DEMO_PHASES.length) : "过程推演";
+    $("dhName").textContent = p ? p.name : "正在回退";
+    if (i >= 0 && navigator.vibrate) navigator.vibrate(9);   // 阶段切换的轻触反馈
+  }
+  const pct = Math.round((i >= 0 ? u : 0) * 100);
+  if (pct !== hudPct){
+    hudPct = pct;
+    $("dhPct").textContent = pct + "%";
+    $("dhBar").style.width = pct + "%";
+  }
+}
+
+function startDemo(){
+  if (demo.on) return;
+  demo.scen = { wind: state.wind, tide: state.tide, slope: state.slope };
+  demo.on = true;
+  demo.t = -0.9;
+  hudPhase = -2; hudPct = -1; lastDW = -1; lastDT = -99;
+  demoPhase = -1;
+
+  $("ctrlSection").classList.add("playing");
+  $("ctrlSection").querySelector(".sec-title span").textContent = "推演中";
+  els.windRange.disabled = els.tideRange.disabled = els.slopeRange.disabled = true;
+  $("demoBtn").textContent = "■ 停止推演";
+  $("demoHud").classList.add("on");
+  setHud(-1, 0);
+
+  showView("ctrl");
+  syncUI();
+  applyDemoUI();
+  sfx.kick();
+  if (navigator.vibrate) navigator.vibrate(12);
+}
+
+function stopDemo(toResult){
+  if (!demo.on) return;
+  demo.on = false;
+  demo.t = 0;
+  if (demo.scen){
+    state.wind  = demo.scen.wind;
+    state.tide  = demo.scen.tide;
+    state.slope = demo.scen.slope;
+  }
+  $("ctrlSection").classList.remove("playing");
+  $("ctrlSection").querySelector(".sec-title span").textContent = "拖动滑块观察变化";
+  els.windRange.disabled = els.tideRange.disabled = els.slopeRange.disabled = false;
+  $("demoBtn").textContent = "▶ 过程推演";
+  $("demoHud").classList.remove("on");
+  hudPhase = -2;
+  demoPhase = -1;
+  syncUI();
+  // 让画面先涨回评估情景，再切到结果页，避免数字与画面错位
+  if (toResult) setTimeout(() => { if (!demo.on) showView("result"); }, 820);
+}
+
+function driveDemo(dt){
+  demo.t += dt;
+  if (demo.t < 0){
+    /* 回退段：把风力与潮位从当前情景平滑拉回“风暴潮发生之前”的状态 */
+    const q = easeIO(clampN((demo.t + 0.9)/0.9, 0, 1));
+    const c = demoCalm(demo.scen);
+    state.wind = clampN(Math.round(lerp(demo.scen.wind, c.wind, q)), 0, 12);
+    state.tide = Math.round(lerp(demo.scen.tide, c.tide, q)*10)/10;
+    applyDemoUI();
+    setHud(-1, 0);
+    return;
+  }
+  const u = Math.min(1, demo.t / demo.dur);
+  const v = demoAt(u, demo.scen);
+  state.wind = clampN(Math.round(v.wind), 0, 12);
+  state.tide = Math.round(v.tide * 10)/10;
+  applyDemoUI();
+
+  let i = DEMO_PHASES.length - 1;
+  for (let k=0;k<DEMO_PHASES.length;k++){
+    if (u >= DEMO_PHASES[k].a && u < DEMO_PHASES[k].b){ i = k; break; }
+  }
+  demoPhase = i;
+  setHud(i, u);
+
+  if (u >= 0.999) stopDemo(true);
 }
 
 /* ---------- 输入事件 ---------- */
@@ -1477,8 +2116,25 @@ function showView(name){
   resize();
   render(physics(state.wind, state.tide, state.slope));
 }
-$("evalBtn").addEventListener("click", () => showView("result"));
-$("resetBtn").addEventListener("click", () => showView("ctrl"));
+$("evalBtn").addEventListener("click", () => {
+  if (demo.on) stopDemo(false);
+  showView("result");
+});
+$("resetBtn").addEventListener("click", () => {
+  if (demo.on) stopDemo(false);
+  showView("ctrl");
+});
+$("demoBtn").addEventListener("click", () => {
+  if (demo.on) stopDemo(false);
+  else startDemo();
+});
+/* 环境音开关（默认开启，首次触摸后开始合成播放） */
+$("sndBtn").addEventListener("click", () => {
+  const on = sfx.toggle();
+  $("sndBtn").classList.toggle("off", !on);
+  $("sndBtn").setAttribute("aria-label", on ? "关闭环境音" : "开启环境音");
+  if (navigator.vibrate) navigator.vibrate(8);
+});
 
 function syncUI(){
   els.windRange.value = state.wind; setSliderFill(els.windRange);
@@ -1517,6 +2173,7 @@ function init(){
   const p0 = physics(state.wind, state.tide, state.slope);
   view.surge = p0.surge; view.level = p0.level;
   requestAnimationFrame(frame);
+  sfx.arm();   // 默认开启声音：首次触摸/按键后自动起播
   window.addEventListener("resize", () => { resize(); render(physics(state.wind, state.tide, state.slope)); seedClouds(); });
   // 视图切换会改变舞台高度（不触发 window resize），用 ResizeObserver 跟随并立即重绘
   if (window.ResizeObserver) new ResizeObserver(() => {
